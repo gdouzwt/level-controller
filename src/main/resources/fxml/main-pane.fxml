@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.zwt.controller.AppController">
+    <center>
+        <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <Button layoutX="14.0" layoutY="83.0" mnemonicParsing="false" onAction="#togglePlug" prefHeight="23.0" prefWidth="73.0" text="开关" />
+         <ColorPicker fx:id="colorPicker" layoutX="100.0" layoutY="83.0" onAction="#updateColor" />
+        </AnchorPane>
+    </center>
+</BorderPane>
