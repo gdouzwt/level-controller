@@ -184,7 +184,6 @@ public class App extends Application {
         if (stringContent.contains("Invalid key")) {
             encryptedKey = null;
         }
-
         return stringContent;
     }
 
@@ -194,23 +193,21 @@ public class App extends Application {
 
     @Override
     public void stop() throws Exception {
-        System.out.println("Stopping...");
+        System.out.println("Saving preference...");
         try {
             Properties properties = new Properties();
             properties.setProperty("lamp.status", String.valueOf(AppController.status));
-            properties.setProperty("lamp.color", String.valueOf(AppController.color));
+            properties.setProperty("lamp.color", AppController.color);
             URL resource = getClass().getClassLoader().getResource("preference.properties");
             FileWriter fileWriter = new FileWriter(Paths.get(resource.toURI()).toFile());
             properties.store(fileWriter, "lamp");
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
-        super.stop();
     }
 
     @Override
     public void start(Stage stage) throws Exception {
-
         Parent parent = FXMLLoader.load(getClass().getResource("/fxml/main-pane.fxml"), ResourceBundle.getBundle("preference"));
         button = (Button) parent.lookup("#button");
         button.setBackground(new Background(new BackgroundFill(Paint.valueOf("grey"), new CornerRadii(12), null)));

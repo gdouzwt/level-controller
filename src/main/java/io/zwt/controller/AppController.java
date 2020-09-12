@@ -58,6 +58,7 @@ public class AppController implements Initializable {
             color = colorPicker.getValue().toString();
             App.updateRGB(1, getColor());
             status = true;
+            lampSwitch.setText("ON");
         }
     }
 
