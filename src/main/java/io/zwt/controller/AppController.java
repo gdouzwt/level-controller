@@ -4,6 +4,7 @@ import io.zwt.App;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
 
@@ -19,6 +20,9 @@ public class AppController implements Initializable {
     @FXML
     ColorPicker colorPicker;
 
+    @FXML
+    Button button;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
     }
@@ -28,10 +32,14 @@ public class AppController implements Initializable {
     }
 
     public void updateColor(ActionEvent actionEvent) throws IOException {
-        Color value = colorPicker.getValue();
-        String s = value.toString();
-        String substring = s.substring(2, 8);
-        int i = Integer.parseInt(substring, 16);
-        App.updateRGB(i);
+        if (actionEvent.getSource().getClass().equals(Button.class)) {
+            App.updateRGB(-1);
+        } else {
+            Color value = colorPicker.getValue();
+            String s = value.toString();
+            String substring = s.substring(2, 8);
+            int i = Integer.parseInt(substring, 16);
+            App.updateRGB(i);
+        }
     }
 }

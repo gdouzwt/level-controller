@@ -2,9 +2,16 @@ package io.zwt;
 
 import io.zwt.util.SymmetricEncryption;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
 import javax.crypto.SecretKey;
@@ -28,6 +35,7 @@ public class App extends Application {
     private static final InetSocketAddress UNICAST = new InetSocketAddress(GATEWAY_ADDRESS, PORT);
     private static final SecretKey SECRET_KEY = new SecretKeySpec(SECRET.getBytes(), 0, 16, "AES");
     private static DatagramChannel channel = null;
+    private static Button button;
 
     public static void main(String[] args) throws Exception {
 
@@ -45,6 +53,7 @@ public class App extends Application {
         channel.configureBlocking(false);
         Selector selector = Selector.open();
         channel.register(selector, SelectionKey.OP_READ, new DataRecord());
+        App app = new App();
 
         Thread backgroundTask = new Thread(() -> {
             while (true) {
@@ -69,7 +78,7 @@ public class App extends Application {
                         }
                         if (dataRecord.address != null) {
                             try {
-                                String heartbeat = printBufferData(dataRecord.buffer);
+                                app.printBufferData(dataRecord.buffer);
                                 /*try (var mongoClient = MongoClients.create("mongodb://localhost:27017")) {
                                 MongoDatabase database = mongoClient.getDatabase("gateway");
                                 MongoCollection<Document> collection = database.getCollection("heartbeat");
@@ -100,18 +109,23 @@ public class App extends Application {
 
         backgroundTask.setDaemon(true);
         backgroundTask.start();
+
         launch(args);
     }
 
-    public static void updateRGB(int hexString) throws IOException {
+    public static void updateRGB(int hex) throws IOException {
 
         /*
         int[] musicId = {0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29};
         int i = random.nextInt(musicId.length);
         String writeMusic = "{\"cmd\":\"write\",\"model\":\"gateway\",\"sid\":\"7811dcf981c4\",\"short_id\":0,\"data\":\"{\\\"mid\\\":" + musicId[i] + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
         */
-
-        String writeRGBData = NEW_RGB_CMD_HEAD + ((0xFFL << 24) | hexString) + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
+        String writeRGBData;
+        if (hex == -1) {
+            writeRGBData = NEW_RGB_CMD_HEAD + 0 + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
+        } else {
+            writeRGBData = NEW_RGB_CMD_HEAD + ((0xFFL << 24) | hex) + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
+        }
         ByteBuffer to = ByteBuffer.wrap(writeRGBData.getBytes());
         if (encryptedKey != null) {
             channel.send(to, UNICAST);
@@ -129,7 +143,7 @@ public class App extends Application {
         }
     }
 
-    private static synchronized String printBufferData(Buffer input) throws Exception {
+    private synchronized String printBufferData(Buffer input) throws Exception {
 
         input.flip();
         byte[] content = new byte[input.limit()];
@@ -147,9 +161,29 @@ public class App extends Application {
             System.out.println("************************************************************* KEY UPDATED **************************************************************");
         }
         System.out.println(stringContent);
+        if (stringContent.contains("report") && stringContent.contains("plug")) {
+            if (stringContent.contains("on")) {
+                // 更新为 on
+                Platform.runLater(() -> {
+                    button.setBackground(new Background(new BackgroundFill(Paint.valueOf("green"), new CornerRadii(12), null)));
+                    button.setTextFill(Paint.valueOf("white"));
+                    button.setText("插座已开");
+                });
+
+            } else {
+//                    button.setTextFill(Paint.valueOf("green"));
+                // off
+                Platform.runLater(() -> {
+                    button.setBackground(new Background(new BackgroundFill(Paint.valueOf("grey"), new CornerRadii(12), null)));
+                    button.setTextFill(Paint.valueOf("black"));
+                    button.setText("插座已关");
+                });
+            }
+        }
         if (stringContent.contains("Invalid key")) {
             encryptedKey = null;
         }
+
         return stringContent;
     }
 
@@ -160,8 +194,12 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+
         Parent parent = FXMLLoader.load(getClass().getResource("/fxml/main-pane.fxml"));
+        button = (Button) parent.lookup("#button");
+        button.setBackground(new Background(new BackgroundFill(Paint.valueOf("grey"), new CornerRadii(12), null)));
         Scene scene = new Scene(parent);
+        //scene.getStylesheets().add(getClass().getResource("/fxml/style.css").toString());
         stage.setScene(scene);
         stage.setTitle(APP_TITLE);
         stage.show();
