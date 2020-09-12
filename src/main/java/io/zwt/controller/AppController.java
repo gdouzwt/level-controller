@@ -23,8 +23,20 @@ public class AppController implements Initializable {
     @FXML
     Button button;
 
+    @FXML
+    Button lampSwitch;
+
+    public static boolean status;
+    public static String color;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        String lampStatus = resources.getString("lamp.status");
+        color = resources.getString("lamp.color");
+        status = Boolean.parseBoolean(lampStatus);
+        colorPicker.setValue(Color.web(color));
+        lampSwitch.setText(status ? "ON" : "OFF");
     }
 
     public void togglePlug(ActionEvent actionEvent) throws IOException {
@@ -33,13 +45,24 @@ public class AppController implements Initializable {
 
     public void updateColor(ActionEvent actionEvent) throws IOException {
         if (actionEvent.getSource().getClass().equals(Button.class)) {
-            App.updateRGB(-1);
+            if (status) {
+                App.updateRGB(-1, getColor());
+                status = false;
+                lampSwitch.setText("OFF");
+            } else {
+                App.updateRGB(0, getColor());
+                status = true;
+                lampSwitch.setText("ON");
+            }
         } else {
-            Color value = colorPicker.getValue();
-            String s = value.toString();
-            String substring = s.substring(2, 8);
-            int i = Integer.parseInt(substring, 16);
-            App.updateRGB(i);
+            color = colorPicker.getValue().toString();
+            App.updateRGB(1, getColor());
+            status = true;
         }
+    }
+
+    private int getColor() {
+        String substring = color.substring(2, 8);
+        return Integer.parseInt(substring, 16);
     }
 }

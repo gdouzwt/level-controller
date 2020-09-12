@@ -1,5 +1,6 @@
 package io.zwt;
 
+import io.zwt.controller.AppController;
 import io.zwt.util.SymmetricEncryption;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -9,7 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.*;
 import java.nio.Buffer;
@@ -24,7 +25,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.Properties;
+import java.util.ResourceBundle;
 
 import static io.zwt.config.Config.*;
 
@@ -78,7 +82,7 @@ public class App extends Application {
                         }
                         if (dataRecord.address != null) {
                             try {
-                                app.printBufferData(dataRecord.buffer);
+                                app.onReceiveData(dataRecord.buffer);
                                 /*try (var mongoClient = MongoClients.create("mongodb://localhost:27017")) {
                                 MongoDatabase database = mongoClient.getDatabase("gateway");
                                 MongoCollection<Document> collection = database.getCollection("heartbeat");
@@ -113,7 +117,7 @@ public class App extends Application {
         launch(args);
     }
 
-    public static void updateRGB(int hex) throws IOException {
+    public static void updateRGB(final int cmd, final int colorValue) throws IOException {
 
         /*
         int[] musicId = {0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29};
@@ -121,10 +125,10 @@ public class App extends Application {
         String writeMusic = "{\"cmd\":\"write\",\"model\":\"gateway\",\"sid\":\"7811dcf981c4\",\"short_id\":0,\"data\":\"{\\\"mid\\\":" + musicId[i] + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
         */
         String writeRGBData;
-        if (hex == -1) {
+        if (cmd == -1) {
             writeRGBData = NEW_RGB_CMD_HEAD + 0 + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
         } else {
-            writeRGBData = NEW_RGB_CMD_HEAD + ((0xFFL << 24) | hex) + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
+            writeRGBData = NEW_RGB_CMD_HEAD + ((0xFFL << 24) | colorValue) + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
         }
         ByteBuffer to = ByteBuffer.wrap(writeRGBData.getBytes());
         if (encryptedKey != null) {
@@ -143,7 +147,7 @@ public class App extends Application {
         }
     }
 
-    private synchronized String printBufferData(Buffer input) throws Exception {
+    private synchronized String onReceiveData(Buffer input) throws Exception {
 
         input.flip();
         byte[] content = new byte[input.limit()];
@@ -156,14 +160,13 @@ public class App extends Application {
             int token = stringContent.indexOf("token");
             token += 8;
             String tokenString = stringContent.substring(token, token + 16);
-            byte[] cipher = tokenAESCrypto(tokenString);
+            byte[] cipher = encryptToken(tokenString);
             encryptedKey = DatatypeConverter.printHexBinary(cipher);
-            System.out.println("************************************************************* KEY UPDATED **************************************************************");
+            //System.out.println("************************************************************* KEY UPDATED **************************************************************");
         }
         System.out.println(stringContent);
         if (stringContent.contains("report") && stringContent.contains("plug")) {
             if (stringContent.contains("on")) {
-                // 更新为 on
                 Platform.runLater(() -> {
                     button.setBackground(new Background(new BackgroundFill(Paint.valueOf("green"), new CornerRadii(12), null)));
                     button.setTextFill(Paint.valueOf("white"));
@@ -171,8 +174,6 @@ public class App extends Application {
                 });
 
             } else {
-//                    button.setTextFill(Paint.valueOf("green"));
-                // off
                 Platform.runLater(() -> {
                     button.setBackground(new Background(new BackgroundFill(Paint.valueOf("grey"), new CornerRadii(12), null)));
                     button.setTextFill(Paint.valueOf("black"));
@@ -187,15 +188,30 @@ public class App extends Application {
         return stringContent;
     }
 
-
-    private static byte[] tokenAESCrypto(String token) throws Exception {
+    private static byte[] encryptToken(String token) throws Exception {
         return SymmetricEncryption.performAESEncryption(token, SECRET_KEY, INITIALIZATION_VECTOR);
+    }
+
+    @Override
+    public void stop() throws Exception {
+        System.out.println("Stopping...");
+        try {
+            Properties properties = new Properties();
+            properties.setProperty("lamp.status", String.valueOf(AppController.status));
+            properties.setProperty("lamp.color", String.valueOf(AppController.color));
+            URL resource = getClass().getClassLoader().getResource("preference.properties");
+            FileWriter fileWriter = new FileWriter(Paths.get(resource.toURI()).toFile());
+            properties.store(fileWriter, "lamp");
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+        super.stop();
     }
 
     @Override
     public void start(Stage stage) throws Exception {
 
-        Parent parent = FXMLLoader.load(getClass().getResource("/fxml/main-pane.fxml"));
+        Parent parent = FXMLLoader.load(getClass().getResource("/fxml/main-pane.fxml"), ResourceBundle.getBundle("preference"));
         button = (Button) parent.lookup("#button");
         button.setBackground(new Background(new BackgroundFill(Paint.valueOf("grey"), new CornerRadii(12), null)));
         Scene scene = new Scene(parent);
