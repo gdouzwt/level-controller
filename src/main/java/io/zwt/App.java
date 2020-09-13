@@ -52,7 +52,6 @@ public class App extends Application {
         doNetwork(selector, app);
       }
     };
-
     Thread backgroundTask = new Thread(task);
     backgroundTask.setDaemon(true);
     backgroundTask.start();
@@ -175,7 +174,6 @@ public class App extends Application {
   private static byte[] encryptToken(String token) throws Exception {
     return SymmetricEncryption.performAESEncryption(token, SECRET_KEY, INITIALIZATION_VECTOR);
   }
-
 
   @Override
   public void start(Stage stage) throws Exception {
