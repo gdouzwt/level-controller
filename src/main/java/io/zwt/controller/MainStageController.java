@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
 /**
  * 主面板的控制器，界面交互逻辑写在这里。
  */
-public class AppController implements Initializable {
+public class MainStageController implements Initializable {
 
   @FXML
   ColorPicker colorPicker;
@@ -31,7 +31,6 @@ public class AppController implements Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-
     String lampStatus = resources.getString("lamp.status");
     color = resources.getString("lamp.color");
     status = Boolean.parseBoolean(lampStatus);

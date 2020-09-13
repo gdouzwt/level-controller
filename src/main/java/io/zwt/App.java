@@ -1,22 +1,22 @@
 package io.zwt;
 
-import io.zwt.controller.AppController;
+import io.zwt.controller.MainStageController;
 import io.zwt.domain.DataRecord;
+import io.zwt.service.LANTask;
 import io.zwt.util.SymmetricEncryption;
 import javafx.application.Application;
-import javafx.application.Platform;
+import javafx.beans.binding.When;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -26,7 +26,6 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.file.Paths;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -34,24 +33,19 @@ import static io.zwt.config.Config.*;
 
 public class App extends Application {
 
-  private static String encryptedKey;
+  public static volatile String encryptedKey;
   private static boolean isOn = true;
   private static DatagramChannel channel = null;
   private static Button button;
+  LANTask task;
 
   @Override
   public void init() throws Exception {
     Selector selector = getSelector();
     App app = new App();
-    Runnable task = new Runnable() {
-      @Override
-      public void run() {
-        doNetwork(selector, app);
-      }
-    };
-    Thread backgroundTask = new Thread(task);
-    backgroundTask.setDaemon(true);
-    backgroundTask.start();
+    task = new LANTask(selector, app);
+    task.setDaemon(true);
+    task.start();
   }
 
   @Override
@@ -59,6 +53,8 @@ public class App extends Application {
     Parent parent = FXMLLoader.load(getClass().getResource("/fxml/main-pane.fxml"), ResourceBundle.getBundle("preference"));
     button = (Button) parent.lookup("#button");
     button.setBackground(new Background(new BackgroundFill(Paint.valueOf("grey"), new CornerRadii(12), null)));
+    Label label = (Label) parent.lookup("#label");
+    label.textProperty().bind(new When(task.valueProperty().isNull()).then("Receiving data...").otherwise(task.valueProperty()));
     Scene scene = new Scene(parent);
     //scene.getStylesheets().add(getClass().getResource("/fxml/style.css").toString());
     stage.setScene(scene);
@@ -71,8 +67,8 @@ public class App extends Application {
     System.out.println("Saving preference...");
     try {
       Properties properties = new Properties();
-      properties.setProperty("lamp.status", String.valueOf(AppController.status));
-      properties.setProperty("lamp.color", AppController.color);
+      properties.setProperty("lamp.status", String.valueOf(MainStageController.status));
+      properties.setProperty("lamp.color", MainStageController.color);
       URL resource = getClass().getClassLoader().getResource("preference.properties");
       FileWriter fileWriter = new FileWriter(Paths.get(resource.toURI()).toFile());
       properties.store(fileWriter, "lamp");
@@ -83,43 +79,6 @@ public class App extends Application {
 
   public static void main(String[] args) throws Exception {
     Application.launch(args);
-  }
-
-  private static void doNetwork(Selector selector, App app) {
-    while (true) {
-      try {
-        if (selector.select(10000) == 0) {
-          System.out.println("Waiting for heartbeat sync...");
-          continue;
-        }
-        for (Iterator<SelectionKey> iterator = selector.selectedKeys().iterator(); iterator.hasNext(); ) {
-          SelectionKey selectionKey = iterator.next();
-          if (selectionKey.isReadable()) {
-            DatagramChannel selectedChannel = (DatagramChannel) selectionKey.channel();
-            DataRecord dataRecord = (DataRecord) selectionKey.attachment();
-            dataRecord.buffer.clear();
-            dataRecord.address = selectedChannel.receive(dataRecord.buffer);
-            if (dataRecord.address != null) {
-              app.onReceiveData(dataRecord.buffer);
-              if (encryptedKey != null) {
-                selectionKey.interestOps(SelectionKey.OP_WRITE);
-              }
-            }
-          }
-          if (selectionKey.isValid() && selectionKey.isWritable()) {
-            if (encryptedKey == null) {
-              selectionKey.interestOps(SelectionKey.OP_READ);
-              break;
-            } else {
-              selectionKey.interestOps(SelectionKey.OP_READ);
-            }
-          }
-          iterator.remove();
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
   }
 
   private static Selector getSelector() throws IOException {
@@ -160,25 +119,23 @@ public class App extends Application {
     }
   }
 
-  private String onReceiveData(ByteBuffer input) throws Exception {
-    input.flip();
-    byte[] content = new byte[input.limit()];
-    while (input.hasRemaining()) {
-      content[input.position()] = input.get();
+  public String onReceiveData(ByteBuffer receivedBytes) throws Exception {
+    receivedBytes.flip();
+    byte[] bytes = new byte[receivedBytes.limit()];
+    while (receivedBytes.hasRemaining()) {
+      bytes[receivedBytes.position()] = receivedBytes.get();
     }
-    String stringContent = new String(content);
+    String receivedString = new String(bytes);
     // find token and encrypt it
-    if (stringContent.contains("gateway") && stringContent.contains("heartbeat")) {
-      int token = stringContent.indexOf("token");
-      token += 8;
-      String tokenString = stringContent.substring(token, token + 16);
+    if (receivedString.contains("gateway") && receivedString.contains("heartbeat")) {
+      int tokenIndex = receivedString.indexOf("token");
+      String tokenString = receivedString.substring(tokenIndex + 8, tokenIndex + 24);
       byte[] cipher = SymmetricEncryption.performAESEncryption(tokenString, SECRET_KEY, INITIALIZATION_VECTOR);
       encryptedKey = DatatypeConverter.printHexBinary(cipher);
       System.out.println(KEY_UPDATED);
     }
-    System.out.println(stringContent);
-    if (stringContent.contains("report") && stringContent.contains("plug")) {
-      if (stringContent.contains("on")) {
+    /*if (receivedString.contains("report") && receivedString.contains("plug")) {
+      if (receivedString.contains("on")) {
         Platform.runLater(() -> {
           button.setBackground(new Background(new BackgroundFill(Paint.valueOf("green"), new CornerRadii(12), null)));
           button.setTextFill(Paint.valueOf("white"));
@@ -191,10 +148,11 @@ public class App extends Application {
           button.setText("插座已关");
         });
       }
-    }
-    if (stringContent.contains("Invalid key")) {
+    }*/
+    if (receivedString.contains("Invalid key")) {
       encryptedKey = null;
     }
-    return stringContent;
+    System.out.println(receivedString);
+    return receivedString;
   }
 }
