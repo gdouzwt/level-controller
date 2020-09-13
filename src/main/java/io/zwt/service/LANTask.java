@@ -6,11 +6,11 @@ import javafx.concurrent.Task;
 
 public class LANTask extends Task<StringProperty> {
 
-    @Override
-    protected StringProperty call() throws Exception {
-        StringProperty stringProperty = new SimpleStringProperty();
+  @Override
+  protected StringProperty call() throws Exception {
+    StringProperty stringProperty = new SimpleStringProperty();
 
-        updateValue(stringProperty);
-        return stringProperty;
-    }
+    updateValue(stringProperty);
+    return stringProperty;
+  }
 }

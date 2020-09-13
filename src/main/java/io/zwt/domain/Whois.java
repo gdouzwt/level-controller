@@ -1,9 +1,9 @@
 package io.zwt.domain;
 
 public class Whois {
-    private final String cmd;
+  private final String cmd;
 
-    public Whois() {
-        this.cmd = "whois";
-    }
+  public Whois() {
+    this.cmd = "whois";
+  }
 }

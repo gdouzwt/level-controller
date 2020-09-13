@@ -17,53 +17,53 @@ import java.util.ResourceBundle;
  */
 public class AppController implements Initializable {
 
-    @FXML
-    ColorPicker colorPicker;
+  @FXML
+  ColorPicker colorPicker;
 
-    @FXML
-    Button button;
+  @FXML
+  Button button;
 
-    @FXML
-    Button lampSwitch;
+  @FXML
+  Button lampSwitch;
 
-    public static boolean status;
-    public static String color;
+  public static boolean status;
+  public static String color;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
 
-        String lampStatus = resources.getString("lamp.status");
-        color = resources.getString("lamp.color");
-        status = Boolean.parseBoolean(lampStatus);
-        colorPicker.setValue(Color.web(color));
-        lampSwitch.setText(status ? "ON" : "OFF");
+    String lampStatus = resources.getString("lamp.status");
+    color = resources.getString("lamp.color");
+    status = Boolean.parseBoolean(lampStatus);
+    colorPicker.setValue(Color.web(color));
+    lampSwitch.setText(status ? "ON" : "OFF");
+  }
+
+  public void togglePlug(ActionEvent actionEvent) throws IOException {
+    App.togglePlug();
+  }
+
+  public void updateColor(ActionEvent actionEvent) throws IOException {
+    if (actionEvent.getSource().getClass().equals(Button.class)) {
+      if (status) {
+        App.updateRGB(-1, getColor());
+        status = false;
+        lampSwitch.setText("OFF");
+      } else {
+        App.updateRGB(0, getColor());
+        status = true;
+        lampSwitch.setText("ON");
+      }
+    } else {
+      color = colorPicker.getValue().toString();
+      App.updateRGB(1, getColor());
+      status = true;
+      lampSwitch.setText("ON");
     }
+  }
 
-    public void togglePlug(ActionEvent actionEvent) throws IOException {
-        App.togglePlug();
-    }
-
-    public void updateColor(ActionEvent actionEvent) throws IOException {
-        if (actionEvent.getSource().getClass().equals(Button.class)) {
-            if (status) {
-                App.updateRGB(-1, getColor());
-                status = false;
-                lampSwitch.setText("OFF");
-            } else {
-                App.updateRGB(0, getColor());
-                status = true;
-                lampSwitch.setText("ON");
-            }
-        } else {
-            color = colorPicker.getValue().toString();
-            App.updateRGB(1, getColor());
-            status = true;
-            lampSwitch.setText("ON");
-        }
-    }
-
-    private int getColor() {
-        String substring = color.substring(2, 8);
-        return Integer.parseInt(substring, 16);
-    }
+  private int getColor() {
+    String substring = color.substring(2, 8);
+    return Integer.parseInt(substring, 16);
+  }
 }
