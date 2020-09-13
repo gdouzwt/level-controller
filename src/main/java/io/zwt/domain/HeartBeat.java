@@ -16,7 +16,8 @@ public class HeartBeat implements Serializable {
   private StringProperty shortId;
   private StringProperty token;
   @JsonRawValue
-  private String data;
+  private Data data;
+
 
   public HeartBeat() {
     this.cmd = new SimpleStringProperty();
@@ -87,30 +88,13 @@ public class HeartBeat implements Serializable {
     this.tokenProperty().set(token);
   }
 
-  public String getData() {
+  public Data getData() {
     return data;
   }
 
-  public void setData(String data) {
+  public void setData(Data data) {
     this.data = data;
   }
-
-
-  /*//  @JsonRawValue(value = false)
-  @JsonRawValue
-  public String getData() {
-    return data.get();
-  }
-
-  public StringProperty dataProperty() {
-    return data;
-  }
-
-  @JsonRawValue(value = false)
-//  @JsonRawValue
-  public void setData(String data) {
-    this.dataProperty().set(data);
-  }*/
 
   @Override
   public String toString() {

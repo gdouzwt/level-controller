@@ -22,6 +22,7 @@ public class LANTask extends Thread {
   private App app;
   private StringProperty value;
   private StringProperty token;
+  private StringProperty ip;
   private volatile SimpleObjectProperty<HeartBeat> heartBeat;
   private ObjectMapper objectMapper;
 
@@ -57,6 +58,18 @@ public class LANTask extends Thread {
     this.value.set(value);
   }
 
+  public String getIp() {
+    return ip.get();
+  }
+
+  public StringProperty ipProperty() {
+    return ip;
+  }
+
+  public void setIp(String ip) {
+    this.ip.set(ip);
+  }
+
   public LANTask(Selector selector, App app) {
     this.selector = selector;
     this.app = app;
@@ -67,6 +80,7 @@ public class LANTask extends Thread {
   public void run() {
     value = new SimpleStringProperty();
     token = new SimpleStringProperty();
+    ip = new SimpleStringProperty();
     heartBeat = new SimpleObjectProperty<>();
     while (true) {
       try {
@@ -85,10 +99,7 @@ public class LANTask extends Thread {
               String data = app.onReceiveData(dataRecord.buffer);
               if (data.contains("heartbeat")) {
                 HeartBeat beat = objectMapper.readValue(data, HeartBeat.class);
-                System.out.println(beat.getData());
-                String s = objectMapper.writeValueAsString(beat);
-                System.out.println(s);
-                Platform.runLater(() -> setHeartBeat(beat));
+                Platform.runLater(() -> setIp(beat.getData().getIp()));
               }
               if (encryptedKey != null) {
                 selectionKey.interestOps(SelectionKey.OP_WRITE);

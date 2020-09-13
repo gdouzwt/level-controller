@@ -1,11 +1,7 @@
 package io.zwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zwt.controller.MainStageController;
-import io.zwt.domain.Data;
 import io.zwt.domain.DataRecord;
-import io.zwt.domain.HeartBeat;
-import io.zwt.domain.IP;
 import io.zwt.service.LANTask;
 import io.zwt.util.SymmetricEncryption;
 import javafx.application.Application;
@@ -58,10 +54,11 @@ public class App extends Application {
     button = (Button) parent.lookup("#button");
     button.setBackground(new Background(new BackgroundFill(Paint.valueOf("grey"), new CornerRadii(12), null)));
     Label label = (Label) parent.lookup("#label");
-    label.textProperty().bind(new When(task.heartBeatProperty().isNull())
+
+    label.textProperty().bind(new When(task.ipProperty().isNull())
       .then("Receiving data...")
-      .otherwise(task.heartBeatProperty().asString()));
-//    label.textProperty().bind(task.valueProperty());
+      .otherwise(task.ipProperty()));
+
     Scene scene = new Scene(parent);
     //scene.getStylesheets().add(getClass().getResource("/fxml/style.css").toString());
     stage.setScene(scene);
@@ -85,16 +82,6 @@ public class App extends Application {
   }
 
   public static void main(String[] args) throws Exception {
-    HeartBeat heartBeat = new HeartBeat();
-    heartBeat.setCmd("heartbeat");
-    heartBeat.setData("{\"ip\":\"192.168.1.145\"}");
-    heartBeat.setModel("gateway");
-    heartBeat.setSid("7811dcf981c4");
-    heartBeat.setShortId("0");
-    heartBeat.setToken("GNDLfCuo1JDcMwa5");
-    ObjectMapper objectMapper = new ObjectMapper();
-    String s = objectMapper.writeValueAsString(heartBeat);
-    System.out.println(s);
     Application.launch(args);
   }
 

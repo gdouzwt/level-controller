@@ -6,7 +6,9 @@ public class Data implements Serializable {
   private String ip;
 
   public Data(String ipString) {
-    this.ip = ipString;
+    int from = ipString.indexOf(':') + 2;
+    int to = ipString.indexOf('}') - 1;
+    this.ip = ipString.substring(from, to);
   }
 
   public String getIp() {
@@ -19,8 +21,6 @@ public class Data implements Serializable {
 
   @Override
   public String toString() {
-    return "Data{" +
-      "ip='" + ip + '\'' +
-      '}';
+    return "{" + "\"" + "ip" + "\"" + ':' + "\"" + ip + "\"" + '}';
   }
 }
