@@ -1,5 +1,6 @@
 package io.zwt.service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zwt.App;
 import io.zwt.domain.DataRecord;
@@ -73,7 +74,7 @@ public class LANTask extends Thread {
   public LANTask(Selector selector, App app) {
     this.selector = selector;
     this.app = app;
-    this.objectMapper = new ObjectMapper();
+    this.objectMapper = new ObjectMapper().configure(DeserializationFeature.EAGER_DESERIALIZER_FETCH, true);
   }
 
   @Override
@@ -97,10 +98,10 @@ public class LANTask extends Thread {
             dataRecord.address = selectedChannel.receive(dataRecord.buffer);
             if (dataRecord.address != null) {
               String data = app.onReceiveData(dataRecord.buffer);
-              if (data.contains("heartbeat")) {
+//              if (data.contains("heartbeat")) {
                 HeartBeat beat = objectMapper.readValue(data, HeartBeat.class);
                 Platform.runLater(() -> setIp(beat.getData().getIp()));
-              }
+//              }
               if (encryptedKey != null) {
                 selectionKey.interestOps(SelectionKey.OP_WRITE);
               }

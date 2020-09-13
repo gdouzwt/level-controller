@@ -1,7 +1,9 @@
 package io.zwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zwt.controller.MainStageController;
 import io.zwt.domain.DataRecord;
+import io.zwt.domain.Whois;
 import io.zwt.service.LANTask;
 import io.zwt.util.SymmetricEncryption;
 import javafx.application.Application;
@@ -82,6 +84,11 @@ public class App extends Application {
   }
 
   public static void main(String[] args) throws Exception {
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    Whois whois = new Whois();
+    String s = objectMapper.writeValueAsString(whois);
+    System.out.println(s);
     Application.launch(args);
   }
 
