@@ -1,6 +1,7 @@
 package io.zwt;
 
 import io.zwt.controller.AppController;
+import io.zwt.domain.DataRecord;
 import io.zwt.util.SymmetricEncryption;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -43,6 +44,67 @@ public class App extends Application {
 
     public static void main(String[] args) throws Exception {
 
+        Selector selector = getSelector();
+        App app = new App();
+
+        Thread backgroundTask = new Thread(
+            () -> {
+                doNetwork(selector, app);
+            }
+        );
+
+        backgroundTask.setDaemon(true);
+        backgroundTask.start();
+
+        launch(args);
+    }
+
+    private static void doNetwork(Selector selector, App app) {
+        while (true) {
+            try {
+                if (selector.select(10000) == 0) {
+                    System.out.println("Waiting for heartbeat sync...");
+                    continue;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            for (Iterator<SelectionKey> iterator = selector.selectedKeys().iterator(); iterator.hasNext(); ) {
+                SelectionKey selectionKey = iterator.next();
+                if (selectionKey.isReadable()) {
+                    DatagramChannel selectedChannel = (DatagramChannel) selectionKey.channel();
+                    DataRecord dataRecord = (DataRecord) selectionKey.attachment();
+                    dataRecord.buffer.clear();
+                    try {
+                        dataRecord.address = selectedChannel.receive(dataRecord.buffer);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (dataRecord.address != null) {
+                        try {
+                            app.onReceiveData(dataRecord.buffer);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        if (encryptedKey != null) {
+                            selectionKey.interestOps(SelectionKey.OP_WRITE);
+                        }
+                    }
+                }
+                if (selectionKey.isValid() && selectionKey.isWritable()) {
+                    if (encryptedKey == null) {
+                        selectionKey.interestOps(SelectionKey.OP_READ);
+                        break;
+                    } else {
+                        selectionKey.interestOps(SelectionKey.OP_READ);
+                    }
+                }
+                iterator.remove();
+            }
+        }
+    }
+
+    private static Selector getSelector() throws IOException {
         NetworkInterface ni = NetworkInterface.getByName("eth6");
         InetAddress multicastAddress = InetAddress.getByName(MULTICAST_ADDRESS);
         channel = DatagramChannel.open(StandardProtocolFamily.INET)
@@ -53,57 +115,7 @@ public class App extends Application {
         channel.configureBlocking(false);
         Selector selector = Selector.open();
         channel.register(selector, SelectionKey.OP_READ, new DataRecord());
-        App app = new App();
-
-        Thread backgroundTask = new Thread(() -> {
-            while (true) {
-                try {
-                    if (selector.select(10000) == 0) {
-                        System.out.println("Waiting for heartbeat sync...");
-                        continue;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                for (Iterator<SelectionKey> iterator = selector.selectedKeys().iterator(); iterator.hasNext(); ) {
-                    SelectionKey selectionKey = iterator.next();
-                    if (selectionKey.isReadable()) {
-                        DatagramChannel selectedChannel = (DatagramChannel) selectionKey.channel();
-                        DataRecord dataRecord = (DataRecord) selectionKey.attachment();
-                        dataRecord.buffer.clear();
-                        try {
-                            dataRecord.address = selectedChannel.receive(dataRecord.buffer);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        if (dataRecord.address != null) {
-                            try {
-                                app.onReceiveData(dataRecord.buffer);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            if (encryptedKey != null) {
-                                selectionKey.interestOps(SelectionKey.OP_WRITE);
-                            }
-                        }
-                    }
-                    if (selectionKey.isValid() && selectionKey.isWritable()) {
-                        if (encryptedKey == null) {
-                            selectionKey.interestOps(SelectionKey.OP_READ);
-                            break;
-                        } else {
-                            selectionKey.interestOps(SelectionKey.OP_READ);
-                        }
-                    }
-                    iterator.remove();
-                }
-            }
-        });
-
-        backgroundTask.setDaemon(true);
-        backgroundTask.start();
-
-        launch(args);
+        return selector;
     }
 
     public static void updateRGB(final int cmd, final int colorValue) throws IOException {
@@ -200,10 +212,5 @@ public class App extends Application {
         stage.setScene(scene);
         stage.setTitle(APP_TITLE);
         stage.show();
-    }
-
-    static class DataRecord {
-        public SocketAddress address;
-        public ByteBuffer buffer = ByteBuffer.allocate(400);
     }
 }
