@@ -42,8 +42,8 @@ public class App extends Application {
   private static DatagramChannel channel = null;
   private static Button button;
 
-  public static void main(String[] args) throws Exception {
-
+  @Override
+  public void init() throws Exception {
     Selector selector = getSelector();
     App app = new App();
     Runnable task = new Runnable() {
@@ -55,6 +55,36 @@ public class App extends Application {
     Thread backgroundTask = new Thread(task);
     backgroundTask.setDaemon(true);
     backgroundTask.start();
+  }
+
+  @Override
+  public void start(Stage stage) throws Exception {
+    Parent parent = FXMLLoader.load(getClass().getResource("/fxml/main-pane.fxml"), ResourceBundle.getBundle("preference"));
+    button = (Button) parent.lookup("#button");
+    button.setBackground(new Background(new BackgroundFill(Paint.valueOf("grey"), new CornerRadii(12), null)));
+    Scene scene = new Scene(parent);
+    //scene.getStylesheets().add(getClass().getResource("/fxml/style.css").toString());
+    stage.setScene(scene);
+    stage.setTitle(APP_TITLE);
+    stage.show();
+  }
+
+  @Override
+  public void stop() throws Exception {
+    System.out.println("Saving preference...");
+    try {
+      Properties properties = new Properties();
+      properties.setProperty("lamp.status", String.valueOf(AppController.status));
+      properties.setProperty("lamp.color", AppController.color);
+      URL resource = getClass().getClassLoader().getResource("preference.properties");
+      FileWriter fileWriter = new FileWriter(Paths.get(resource.toURI()).toFile());
+      properties.store(fileWriter, "lamp");
+    } catch (IOException ioException) {
+      ioException.printStackTrace();
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
     Application.launch(args);
   }
 
@@ -173,32 +203,5 @@ public class App extends Application {
 
   private static byte[] encryptToken(String token) throws Exception {
     return SymmetricEncryption.performAESEncryption(token, SECRET_KEY, INITIALIZATION_VECTOR);
-  }
-
-  @Override
-  public void start(Stage stage) throws Exception {
-    Parent parent = FXMLLoader.load(getClass().getResource("/fxml/main-pane.fxml"), ResourceBundle.getBundle("preference"));
-    button = (Button) parent.lookup("#button");
-    button.setBackground(new Background(new BackgroundFill(Paint.valueOf("grey"), new CornerRadii(12), null)));
-    Scene scene = new Scene(parent);
-    //scene.getStylesheets().add(getClass().getResource("/fxml/style.css").toString());
-    stage.setScene(scene);
-    stage.setTitle(APP_TITLE);
-    stage.show();
-  }
-
-  @Override
-  public void stop() throws Exception {
-    System.out.println("Saving preference...");
-    try {
-      Properties properties = new Properties();
-      properties.setProperty("lamp.status", String.valueOf(AppController.status));
-      properties.setProperty("lamp.color", AppController.color);
-      URL resource = getClass().getClassLoader().getResource("preference.properties");
-      FileWriter fileWriter = new FileWriter(Paths.get(resource.toURI()).toFile());
-      properties.store(fileWriter, "lamp");
-    } catch (IOException ioException) {
-      ioException.printStackTrace();
-    }
   }
 }
