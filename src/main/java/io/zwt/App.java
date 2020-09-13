@@ -21,7 +21,6 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.*;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -35,10 +34,8 @@ import static io.zwt.config.Config.*;
 
 public class App extends Application {
 
-  private static volatile String encryptedKey;
+  private static String encryptedKey;
   private static boolean isOn = true;
-  private static final InetSocketAddress UNICAST = new InetSocketAddress(GATEWAY_ADDRESS, PORT);
-  private static final SecretKey SECRET_KEY = new SecretKeySpec(SECRET.getBytes(), 0, 16, "AES");
   private static DatagramChannel channel = null;
   private static Button button;
 
@@ -148,7 +145,7 @@ public class App extends Application {
     }
     ByteBuffer to = ByteBuffer.wrap(writeRGBData.getBytes());
     if (encryptedKey != null) {
-      channel.send(to, UNICAST);
+      channel.send(to, GATEWAY);
       System.out.println(writeRGBData);
     }
   }
@@ -159,15 +156,15 @@ public class App extends Application {
     ByteBuffer to = ByteBuffer.wrap(writePlugData.getBytes());
     System.out.println(writePlugData);
     if (encryptedKey != null) {
-      channel.send(to, UNICAST);
+      channel.send(to, GATEWAY);
     }
   }
 
-  private synchronized String onReceiveData(Buffer input) throws Exception {
+  private String onReceiveData(ByteBuffer input) throws Exception {
     input.flip();
     byte[] content = new byte[input.limit()];
     while (input.hasRemaining()) {
-      content[input.position()] = ((ByteBuffer) input).get();
+      content[input.position()] = input.get();
     }
     String stringContent = new String(content);
     // find token and encrypt it
@@ -175,7 +172,7 @@ public class App extends Application {
       int token = stringContent.indexOf("token");
       token += 8;
       String tokenString = stringContent.substring(token, token + 16);
-      byte[] cipher = encryptToken(tokenString);
+      byte[] cipher = SymmetricEncryption.performAESEncryption(tokenString, SECRET_KEY, INITIALIZATION_VECTOR);
       encryptedKey = DatatypeConverter.printHexBinary(cipher);
       System.out.println(KEY_UPDATED);
     }
@@ -199,9 +196,5 @@ public class App extends Application {
       encryptedKey = null;
     }
     return stringContent;
-  }
-
-  private static byte[] encryptToken(String token) throws Exception {
-    return SymmetricEncryption.performAESEncryption(token, SECRET_KEY, INITIALIZATION_VECTOR);
   }
 }
