@@ -5,6 +5,7 @@ package io.zwt.config;
  */
 
 public class Config {
+    public static final String KEY_UPDATED = "************************************************************* KEY UPDATED **************************************************************";
     public static final String ON = "\\\"on\\\"";
     public static final String OFF = "\\\"off\\\"";
     public static final String WRITE_PLUG = "{\"cmd\":\"write\",\"model\": \"plug\",\"sid\":\"158d000234727c\",\"short_id\":38455,\"data\": \"{\\\"status\\\":";

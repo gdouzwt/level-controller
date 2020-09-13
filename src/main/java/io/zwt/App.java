@@ -43,17 +43,13 @@ public class App extends Application {
 
     public static void main(String[] args) throws Exception {
 
-        NetworkInterface ni = NetworkInterface.getByName("eth6"); // ethernet
-        InetAddress multicastAddress = InetAddress.getByName(MULTICAST_ADDRESS); // Multicast address
-        if (!multicastAddress.isMulticastAddress()) { // Test if multicast address
-            throw new IllegalArgumentException("Not a multicast address");
-        }
-
+        NetworkInterface ni = NetworkInterface.getByName("eth6");
+        InetAddress multicastAddress = InetAddress.getByName(MULTICAST_ADDRESS);
         channel = DatagramChannel.open(StandardProtocolFamily.INET)
             .setOption(StandardSocketOptions.SO_REUSEADDR, true)
             .bind(new InetSocketAddress(PORT))
-            .setOption(StandardSocketOptions.IP_MULTICAST_IF, ni);  // IPv4
-        channel.join(multicastAddress, ni);  // !important
+            .setOption(StandardSocketOptions.IP_MULTICAST_IF, ni);
+        channel.join(multicastAddress, ni);
         channel.configureBlocking(false);
         Selector selector = Selector.open();
         channel.register(selector, SelectionKey.OP_READ, new DataRecord());
@@ -83,11 +79,6 @@ public class App extends Application {
                         if (dataRecord.address != null) {
                             try {
                                 app.onReceiveData(dataRecord.buffer);
-                                /*try (var mongoClient = MongoClients.create("mongodb://localhost:27017")) {
-                                MongoDatabase database = mongoClient.getDatabase("gateway");
-                                MongoCollection<Document> collection = database.getCollection("heartbeat");
-                                collection.insertOne(new Document(BasicDBObject.parse(heartbeat)));
-                                }*/
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -101,8 +92,6 @@ public class App extends Application {
                             selectionKey.interestOps(SelectionKey.OP_READ);
                             break;
                         } else {
-                            //updateRGB((DatagramChannel) selectionKey.channel());
-                            //togglePlug((DatagramChannel) selectionKey.channel());
                             selectionKey.interestOps(SelectionKey.OP_READ);
                         }
                     }
@@ -119,11 +108,6 @@ public class App extends Application {
 
     public static void updateRGB(final int cmd, final int colorValue) throws IOException {
 
-        /*
-        int[] musicId = {0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29};
-        int i = random.nextInt(musicId.length);
-        String writeMusic = "{\"cmd\":\"write\",\"model\":\"gateway\",\"sid\":\"7811dcf981c4\",\"short_id\":0,\"data\":\"{\\\"mid\\\":" + musicId[i] + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
-        */
         String writeRGBData;
         if (cmd == -1) {
             writeRGBData = NEW_RGB_CMD_HEAD + 0 + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
@@ -162,7 +146,7 @@ public class App extends Application {
             String tokenString = stringContent.substring(token, token + 16);
             byte[] cipher = encryptToken(tokenString);
             encryptedKey = DatatypeConverter.printHexBinary(cipher);
-            //System.out.println("************************************************************* KEY UPDATED **************************************************************");
+            System.out.println(KEY_UPDATED);
         }
         System.out.println(stringContent);
         if (stringContent.contains("report") && stringContent.contains("plug")) {
