@@ -2,12 +2,8 @@ package io.zwt.domain;
 
 import java.io.Serializable;
 
-public class Data implements Serializable {
+public class IP implements Serializable {
   private String ip;
-
-  public Data(String ipString) {
-    this.ip = ipString;
-  }
 
   public String getIp() {
     return ip;
@@ -17,10 +13,14 @@ public class Data implements Serializable {
     this.ip = ip;
   }
 
+  public IP(String ip) {
+    int from = ip.indexOf(':') + 1;
+    int to = ip.indexOf('}');
+    this.ip = ip.substring(from, to);
+  }
+
   @Override
   public String toString() {
-    return "Data{" +
-      "ip='" + ip + '\'' +
-      '}';
+    return ip;
   }
 }
