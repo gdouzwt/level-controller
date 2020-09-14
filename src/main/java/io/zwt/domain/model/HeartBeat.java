@@ -1,4 +1,4 @@
-package io.zwt.domain;
+package io.zwt.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

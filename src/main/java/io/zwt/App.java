@@ -1,9 +1,7 @@
 package io.zwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.zwt.controller.MainStageController;
+import io.zwt.controller.PrimaryController;
 import io.zwt.domain.DataRecord;
-import io.zwt.domain.Whois;
 import io.zwt.service.LANTask;
 import io.zwt.util.SymmetricEncryption;
 import javafx.application.Application;
@@ -20,6 +18,8 @@ import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
 import javax.xml.bind.DatatypeConverter;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.*;
@@ -27,8 +27,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 import static io.zwt.config.Config.*;
@@ -39,10 +39,24 @@ public class App extends Application {
   private static boolean isOn = true;
   private static DatagramChannel channel = null;
   private static Button button;
+  private ResourceBundle resourceBundle;
   LANTask task;
+  public static String HOME = System.getProperty("user.home");
 
   @Override
   public void init() throws Exception {
+    File file = new File(HOME + "/preference.properties");
+    if (file.createNewFile()) {
+      Properties properties = new Properties();
+      properties.setProperty("lamp.status", "false");
+      properties.setProperty("lamp.color", "0x008000ff");
+      FileWriter fileWriter = new FileWriter(file);
+      properties.store(fileWriter, "lamp");
+    } else {
+      resourceBundle = new PropertyResourceBundle(new FileReader(file));
+    }
+    resourceBundle = new PropertyResourceBundle(new FileReader(file));
+
     Selector selector = getSelector();
     App app = new App();
     task = new LANTask(selector, app);
@@ -52,7 +66,7 @@ public class App extends Application {
 
   @Override
   public void start(Stage stage) throws Exception {
-    Parent parent = FXMLLoader.load(getClass().getResource("/fxml/main-pane.fxml"), ResourceBundle.getBundle("preference"));
+    Parent parent = FXMLLoader.load(getClass().getResource("/fxml/main-pane.fxml"), resourceBundle);
     button = (Button) parent.lookup("#button");
     button.setBackground(new Background(new BackgroundFill(Paint.valueOf("grey"), new CornerRadii(12), null)));
     Label label = (Label) parent.lookup("#label");
@@ -73,23 +87,13 @@ public class App extends Application {
     System.out.println("Saving preference...");
     try {
       Properties properties = new Properties();
-      properties.setProperty("lamp.status", String.valueOf(MainStageController.status));
-      properties.setProperty("lamp.color", MainStageController.color);
-      URL resource = getClass().getClassLoader().getResource("preference.properties");
-      FileWriter fileWriter = new FileWriter(Paths.get(resource.toURI()).toFile());
+      properties.setProperty("lamp.status", String.valueOf(PrimaryController.status));
+      properties.setProperty("lamp.color", PrimaryController.color);
+      FileWriter fileWriter = new FileWriter(new File(HOME + "/preference.properties"));
       properties.store(fileWriter, "lamp");
     } catch (IOException ioException) {
       ioException.printStackTrace();
     }
-  }
-
-  public static void main(String[] args) throws Exception {
-
-    ObjectMapper objectMapper = new ObjectMapper();
-    Whois whois = new Whois();
-    String s = objectMapper.writeValueAsString(whois);
-    System.out.println(s);
-    Application.launch(args);
   }
 
   private static Selector getSelector() throws IOException {

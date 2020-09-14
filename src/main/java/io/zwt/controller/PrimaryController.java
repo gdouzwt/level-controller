@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
 /**
  * 主面板的控制器，界面交互逻辑写在这里。
  */
-public class MainStageController implements Initializable {
+public class PrimaryController implements Initializable {
 
   @FXML
   ColorPicker colorPicker;
@@ -31,11 +31,15 @@ public class MainStageController implements Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    String lampStatus = resources.getString("lamp.status");
-    color = resources.getString("lamp.color");
-    status = Boolean.parseBoolean(lampStatus);
-    colorPicker.setValue(Color.web(color));
-    lampSwitch.setText(status ? "ON" : "OFF");
+    color = colorPicker.getValue().toString();
+    // 存在对应的key时候才做初始化
+    if (resources.containsKey("lamp.status")) {
+      String lampStatus = resources.getString("lamp.status");
+      status = Boolean.parseBoolean(lampStatus);
+      color = resources.getString("lamp.color");
+      colorPicker.setValue(Color.web(color));
+      lampSwitch.setText(status ? "ON" : "OFF");
+    }
   }
 
   public void togglePlug(ActionEvent actionEvent) throws IOException {

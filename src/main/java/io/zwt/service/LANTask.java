@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zwt.App;
 import io.zwt.domain.DataRecord;
-import io.zwt.domain.HeartBeat;
+import io.zwt.domain.model.HeartBeat;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;

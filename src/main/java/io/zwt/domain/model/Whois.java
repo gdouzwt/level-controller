@@ -1,4 +1,4 @@
-package io.zwt.domain;
+package io.zwt.domain.model;
 
 import java.io.Serializable;
 
