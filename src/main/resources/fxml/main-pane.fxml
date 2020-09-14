@@ -6,7 +6,9 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="914.0" xmlns="http://javafx.com/javafx/11.0.1"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.zwt.controller.PrimaryController">
   <Button fx:id="button" layoutX="53.0" layoutY="42.0" mnemonicParsing="false" onAction="#togglePlug" prefHeight="61.0" prefWidth="90.0" text="插座" textFill="#4a4242"/>
-  <ColorPicker fx:id="colorPicker" layoutX="316.0" layoutY="42.0" onAction="#updateColor"/>
-  <Button fx:id="lampSwitch" layoutX="431.0" layoutY="42.0" mnemonicParsing="false" onAction="#updateColor" prefHeight="23.0" prefWidth="52.0" text="-" textFill="#b56d6d"/>
+  <ColorPicker fx:id="colorPicker" layoutX="358.0" layoutY="110.0" onAction="#updateColor"/>
+  <Button fx:id="lampSwitch" layoutX="251.0" layoutY="110.0" mnemonicParsing="false" onAction="#updateColor" prefHeight="23.0" prefWidth="52.0" text="-" textFill="#b56d6d"/>
   <Label fx:id="label" layoutX="53.0" layoutY="177.0" minHeight="-Infinity" minWidth="-Infinity" text="Label"/>
+  <Slider fx:id="light" layoutX="251.0" layoutY="42.0" majorTickUnit="10.0" onMouseDragged="#updateLight" onMouseReleased="#updateLight" prefHeight="32.0" prefWidth="513.0"
+          showTickLabels="true" showTickMarks="true" value="3.0"/>
 </AnchorPane>

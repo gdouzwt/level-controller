@@ -6,6 +6,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 import java.io.IOException;
@@ -18,6 +21,9 @@ import java.util.ResourceBundle;
 public class PrimaryController implements Initializable {
 
   @FXML
+  Label label;
+
+  @FXML
   ColorPicker colorPicker;
 
   @FXML
@@ -26,8 +32,12 @@ public class PrimaryController implements Initializable {
   @FXML
   Button lampSwitch;
 
+  @FXML
+  Slider light;
+
   public static boolean status;
   public static String color;
+  public static int lightValue = 3;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -49,17 +59,17 @@ public class PrimaryController implements Initializable {
   public void updateColor(ActionEvent actionEvent) throws IOException {
     if (actionEvent.getSource().getClass().equals(Button.class)) {
       if (status) {
-        App.updateRGB(-1, getColor());
+        App.updateRGB(-1, getColor(), 0);
         status = false;
         lampSwitch.setText("OFF");
       } else {
-        App.updateRGB(0, getColor());
+        App.updateRGB(1, getColor(), lightValue);
         status = true;
         lampSwitch.setText("ON");
       }
     } else {
       color = colorPicker.getValue().toString();
-      App.updateRGB(1, getColor());
+      App.updateRGB(0, getColor(), lightValue);
       status = true;
       lampSwitch.setText("ON");
     }
@@ -68,5 +78,11 @@ public class PrimaryController implements Initializable {
   private int getColor() {
     String substring = color.substring(2, 8);
     return Integer.parseInt(substring, 16);
+  }
+
+  public void updateLight(MouseEvent dragEvent) throws IOException {
+    lightValue = (int) light.getValue();
+    System.out.println(lightValue);
+    App.updateRGB(2, getColor(), lightValue);
   }
 }

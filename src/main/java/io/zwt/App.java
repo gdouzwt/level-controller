@@ -110,12 +110,12 @@ public class App extends Application {
     return selector;
   }
 
-  public static void updateRGB(final int cmd, final int colorValue) throws IOException {
+  public static void updateRGB(final int cmd, final int colorValue, final int light) throws IOException {
     String writeRGBData;
     if (cmd == -1) {
-      writeRGBData = NEW_RGB_CMD_HEAD + 0 + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
+      writeRGBData = NEW_RGB_CMD_HEAD + ((light << 24) | colorValue) + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
     } else {
-      writeRGBData = NEW_RGB_CMD_HEAD + ((0xFFL << 24) | colorValue) + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
+      writeRGBData = NEW_RGB_CMD_HEAD + ((light << 24) | colorValue) + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
     }
     ByteBuffer to = ByteBuffer.wrap(writeRGBData.getBytes());
     if (encryptedKey != null) {
