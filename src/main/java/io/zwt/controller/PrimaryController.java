@@ -82,7 +82,8 @@ public class PrimaryController implements Initializable {
 
   public void updateLight(MouseEvent dragEvent) throws IOException {
     lightValue = (int) light.getValue();
-    System.out.println(lightValue);
     App.updateRGB(2, getColor(), lightValue);
+    status = true;
+    lampSwitch.setText("ON");
   }
 }
