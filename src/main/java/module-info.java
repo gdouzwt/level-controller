@@ -4,6 +4,7 @@ module io.zwt.ui {
   requires javafx.graphics;
   requires javafx.fxml;
   requires javafx.controls;
+  requires org.eclipse.paho.client.mqttv3;
   requires com.fasterxml.jackson.databind;
   requires com.fasterxml.jackson.core;
   requires com.fasterxml.jackson.annotation;

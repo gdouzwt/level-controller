@@ -37,7 +37,7 @@ public class App extends Application {
 
   public static volatile String encryptedKey;
   private static boolean isOn = true;
-  private static DatagramChannel channel = null;
+  public static DatagramChannel channel = null;
   private static Button button;
   private ResourceBundle resourceBundle;
   LANTask task;
@@ -148,6 +148,7 @@ public class App extends Application {
       byte[] cipher = SymmetricEncryption.performAESEncryption(tokenString, SECRET_KEY, INITIALIZATION_VECTOR);
       encryptedKey = DatatypeConverter.printHexBinary(cipher);
       System.out.println(KEY_UPDATED);
+      System.out.println(encryptedKey);
     }
     /*if (receivedString.contains("report") && receivedString.contains("plug")) {
       if (receivedString.contains("on")) {

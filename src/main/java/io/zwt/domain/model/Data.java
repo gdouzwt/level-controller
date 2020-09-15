@@ -3,24 +3,26 @@ package io.zwt.domain.model;
 import java.io.Serializable;
 
 public class Data implements Serializable {
-  private String ip;
+  private String content;
 
-  public Data(String ipString) {
-    int from = ipString.indexOf(':') + 2;
-    int to = ipString.indexOf('}') - 1;
-    this.ip = ipString.substring(from, to);
+  public Data(String content) {
+    /*int from = ipString.indexOf(':') + 2;
+    int to = ipString.indexOf('}') - 1;*/
+    //this.content = ipString.substring(from, to);
+    this.content = content;
   }
 
-  public String getIp() {
-    return ip;
+  public String getContent() {
+    return content;
   }
 
-  public void setIp(String ip) {
-    this.ip = ip;
+  public void setContent(String content) {
+    this.content = content;
   }
 
   @Override
   public String toString() {
-    return "{" + "\"" + "ip" + "\"" + ':' + "\"" + ip + "\"" + '}';
+    //return "{" + "\"" + "ip" + "\"" + ':' + "\"" + content + "\"" + '}';
+    return content;
   }
 }
