@@ -18,7 +18,6 @@ public class HeartBeat implements Serializable {
   @JsonRawValue
   private Data data;
 
-
   public HeartBeat() {
     this.cmd = new SimpleStringProperty();
     this.model = new SimpleStringProperty();

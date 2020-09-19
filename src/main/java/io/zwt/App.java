@@ -74,9 +74,7 @@ public class App extends Application {
     label.textProperty().bind(new When(task.ipProperty().isNull())
       .then("Receiving data...")
       .otherwise(task.ipProperty()));
-
     Scene scene = new Scene(parent);
-    //scene.getStylesheets().add(getClass().getResource("/fxml/style.css").toString());
     stage.setScene(scene);
     stage.setTitle(APP_TITLE);
     stage.show();
@@ -150,21 +148,6 @@ public class App extends Application {
       System.out.println(KEY_UPDATED);
       System.out.println(encryptedKey);
     }
-    /*if (receivedString.contains("report") && receivedString.contains("plug")) {
-      if (receivedString.contains("on")) {
-        Platform.runLater(() -> {
-          button.setBackground(new Background(new BackgroundFill(Paint.valueOf("green"), new CornerRadii(12), null)));
-          button.setTextFill(Paint.valueOf("white"));
-          button.setText("插座已开");
-        });
-      } else {
-        Platform.runLater(() -> {
-          button.setBackground(new Background(new BackgroundFill(Paint.valueOf("grey"), new CornerRadii(12), null)));
-          button.setTextFill(Paint.valueOf("black"));
-          button.setText("插座已关");
-        });
-      }
-    }*/
     if (receivedString.contains("Invalid key")) {
       encryptedKey = null;
     }

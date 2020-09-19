@@ -106,6 +106,7 @@ public class LANTask extends Thread {
     MqttConnectOptions connOpts = new MqttConnectOptions();
     connOpts.setUserName("gdouzwt");
     connOpts.setPassword("aio_dPae44yT5NI2jmIxNLfM3LmlqnXw".toCharArray());
+    //connOpts.set
     connOpts.setCleanSession(true);
     System.out.println("Connecting to broker: " + broker);
     try {
