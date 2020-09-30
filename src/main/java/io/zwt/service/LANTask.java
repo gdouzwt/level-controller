@@ -159,7 +159,10 @@ public class LANTask extends Thread {
             dataRecord.address = selectedChannel.receive(dataRecord.buffer);
             if (dataRecord.address != null) {
               String data = app.onReceiveData(dataRecord.buffer);
-              HeartBeat beat = objectMapper.readValue(data, HeartBeat.class);
+              if (data.contains("heartbeat")) {
+                HeartBeat beat = objectMapper.readValue(data, HeartBeat.class);
+                System.out.println(beat.getData());
+              }
               // 发送到 MQTT
               //System.out.println("Publishing message: " + content);
               /*MqttMessage message = new MqttMessage(beat.getData().toString().getBytes());
@@ -168,7 +171,6 @@ public class LANTask extends Thread {
               System.out.println("Message published");*/
               // System.exit(0);
               //Platform.runLater(() -> setIp(beat.getData().getContent()));
-              System.out.println(beat.getData());
               if (encryptedKey != null) {
                 selectionKey.interestOps(SelectionKey.OP_WRITE);
               }

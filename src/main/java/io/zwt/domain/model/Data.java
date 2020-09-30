@@ -7,8 +7,8 @@ public class Data implements Serializable {
 
   public Data(String content) {
     /*int from = ipString.indexOf(':') + 2;
-    int to = ipString.indexOf('}') - 1;*/
-    //this.content = ipString.substring(from, to);
+    int to = ipString.indexOf('}') - 1;
+    this.content = ipString.substring(from, to);*/
     this.content = content;
   }
 

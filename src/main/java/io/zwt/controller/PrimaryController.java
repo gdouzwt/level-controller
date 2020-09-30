@@ -1,6 +1,8 @@
 package io.zwt.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zwt.App;
+import io.zwt.domain.model.Whois;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -85,5 +87,12 @@ public class PrimaryController implements Initializable {
     App.updateRGB(2, getColor(), lightValue);
     status = true;
     lampSwitch.setText("ON");
+  }
+
+  public void sendWhois(ActionEvent actionEvent) throws IOException {
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    String s = objectMapper.writeValueAsString(new Whois());
+    App.sendWhois(s);
   }
 }

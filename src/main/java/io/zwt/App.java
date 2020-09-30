@@ -27,9 +27,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.Properties;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static io.zwt.config.Config.*;
 
@@ -40,8 +38,8 @@ public class App extends Application {
   public static DatagramChannel channel = null;
   private static Button button;
   private ResourceBundle resourceBundle;
-  LANTask task;
   public static String HOME = System.getProperty("user.home");
+  LANTask task;
 
   @Override
   public void init() throws Exception {
@@ -95,7 +93,19 @@ public class App extends Application {
   }
 
   private static Selector getSelector() throws IOException {
-    NetworkInterface ni = NetworkInterface.getByName("eth6");
+    NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
+    Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+    Iterator<NetworkInterface> networkInterfaceIterator = networkInterfaces.asIterator();
+    while (networkInterfaceIterator.hasNext()) {
+      NetworkInterface next = networkInterfaceIterator.next();
+      Optional<InetAddress> first = next.inetAddresses()
+        .filter(inetAddress -> inetAddress.getHostAddress().contains("192.168.1."))
+        .findAny();
+      if (first.isPresent()) {
+        ni = next;
+        break;
+      }
+    }
     InetAddress multicastAddress = InetAddress.getByName(MULTICAST_ADDRESS);
     channel = DatagramChannel.open(StandardProtocolFamily.INET)
       .setOption(StandardSocketOptions.SO_REUSEADDR, true)
@@ -120,6 +130,12 @@ public class App extends Application {
       channel.send(to, GATEWAY);
       System.out.println(writeRGBData);
     }
+  }
+
+  public static void sendWhois(String cmd) throws IOException {
+    ByteBuffer to = ByteBuffer.wrap(cmd.getBytes());
+    channel.send(to, GATEWAY_UDP);
+    System.out.println(cmd);
   }
 
   public static void togglePlug() throws IOException {

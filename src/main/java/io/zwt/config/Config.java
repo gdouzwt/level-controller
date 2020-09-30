@@ -19,9 +19,11 @@ public class Config {
   public static final String SECRET = "07wjrkc41typdvae";
   public static final SecretKey SECRET_KEY = new SecretKeySpec(SECRET.getBytes(), 0, 16, "AES");
   public static final int PORT = 9898;
+  public static final int UDP_PORT = 4321;
   public static final String APP_TITLE = "骚气的米家智能网关控制面板";
   public static final String GATEWAY_ADDRESS = "192.168.1.145";
   public static final String MULTICAST_ADDRESS = "224.0.0.50";
   public static final byte[] INITIALIZATION_VECTOR = {0x17, (byte) 0x99, 0x6d, 0x09, 0x3d, 0x28, (byte) 0xdd, (byte) 0xb3, (byte) 0xba, 0x69, 0x5a, 0x2e, 0x6f, 0x58, 0x56, 0x2e};
   public static final InetSocketAddress GATEWAY = new InetSocketAddress(GATEWAY_ADDRESS, PORT);
+  public static final InetSocketAddress GATEWAY_UDP = new InetSocketAddress(MULTICAST_ADDRESS, UDP_PORT);
 }
