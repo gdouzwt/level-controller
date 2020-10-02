@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zwt.App;
 import io.zwt.domain.DataRecord;
-import io.zwt.domain.model.HeartBeat;
+import io.zwt.domain.model.data.HeartBeat;
+import io.zwt.domain.model.data.Other;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -128,9 +129,7 @@ public class LANTask extends Thread {
               ioException.printStackTrace();
             }
           }
-          Platform.runLater(() -> {
-            setIp(received);
-          });
+          Platform.runLater(() -> setIp(received));
         }
 
         @Override
@@ -159,10 +158,13 @@ public class LANTask extends Thread {
             dataRecord.address = selectedChannel.receive(dataRecord.buffer);
             if (dataRecord.address != null) {
               String data = app.onReceiveData(dataRecord.buffer);
-              if (data.contains("data")) {
+              if (data.contains("heartbeat") && data.contains("gateway")) {
                 HeartBeat beat = objectMapper.readValue(data, HeartBeat.class);
                 //System.out.println(beat.getData());
                 System.out.println(objectMapper.writeValueAsString(beat));
+              } else {
+                Other other = objectMapper.readValue(data, Other.class);
+                System.out.println(objectMapper.writeValueAsString(other));
               }
               // 发送到 MQTT
               //System.out.println("Publishing message: " + content);

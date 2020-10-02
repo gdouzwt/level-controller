@@ -1,4 +1,4 @@
-package io.zwt.domain.model;
+package io.zwt.domain.model.cmd;
 
 import java.io.Serializable;
 

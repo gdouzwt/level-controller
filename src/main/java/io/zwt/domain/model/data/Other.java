@@ -1,11 +1,9 @@
-package io.zwt.domain.model;
+package io.zwt.domain.model.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRawValue;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -15,21 +13,20 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
 @JsonPropertyOrder({"cmd", "model", "sid", "short_id", "token", "data"})
-public class HeartBeat implements Serializable {
+public class Other implements Serializable {
   private StringProperty cmd;
   private StringProperty model;
   private StringProperty sid;
   //@JsonSerialize(using = ToStringSerializer.class)
-  private IntegerProperty shortId;
+  private Integer shortId;
   private StringProperty token;
   @JsonRawValue(value = false)
   private String data;
 
-  public HeartBeat() {
+  public Other() {
     this.cmd = new SimpleStringProperty();
     this.model = new SimpleStringProperty();
     this.sid = new SimpleStringProperty();
-    this.shortId = new SimpleIntegerProperty();
     this.token = new SimpleStringProperty();
   }
 
@@ -71,15 +68,11 @@ public class HeartBeat implements Serializable {
 
   @JsonProperty("short_id")
   public Integer getShortId() {
-    return shortId.get();
-  }
-
-  public IntegerProperty shortIdProperty() {
     return shortId;
   }
 
   public void setShortId(Integer shortId) {
-    this.shortIdProperty().set(shortId);
+    this.shortId = shortId;
   }
 
   public String getToken() {
@@ -108,7 +101,7 @@ public class HeartBeat implements Serializable {
       "cmd='" + cmd.get() + '\'' +
       ", model='" + model.get() + '\'' +
       ", sid='" + sid.get() + '\'' +
-      ", shortId='" + shortId.get() + '\'' +
+      ", shortId='" + shortId + '\'' +
       ", token='" + token.get() + '\'' +
       ", data=" + data +
       '}';

@@ -1,6 +1,6 @@
 package io.zwt;
 
-import io.zwt.controller.PrimaryController;
+import io.zwt.controller.HomeController;
 import io.zwt.domain.DataRecord;
 import io.zwt.service.LANTask;
 import io.zwt.util.SymmetricEncryption;
@@ -64,7 +64,7 @@ public class App extends Application {
 
   @Override
   public void start(Stage stage) throws Exception {
-    Parent parent = FXMLLoader.load(getClass().getResource("/fxml/main-pane.fxml"), resourceBundle);
+    Parent parent = FXMLLoader.load(getClass().getResource("/fxml/home.fxml"), resourceBundle);
     button = (Button) parent.lookup("#button");
     button.setBackground(new Background(new BackgroundFill(Paint.valueOf("grey"), new CornerRadii(12), null)));
     Label label = (Label) parent.lookup("#label");
@@ -83,8 +83,8 @@ public class App extends Application {
     System.out.println("Saving preference...");
     try {
       Properties properties = new Properties();
-      properties.setProperty("lamp.status", String.valueOf(PrimaryController.status));
-      properties.setProperty("lamp.color", PrimaryController.color);
+      properties.setProperty("lamp.status", String.valueOf(HomeController.status));
+      properties.setProperty("lamp.color", HomeController.color);
       FileWriter fileWriter = new FileWriter(new File(HOME + "/preference.properties"));
       properties.store(fileWriter, "lamp");
     } catch (IOException ioException) {

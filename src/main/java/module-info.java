@@ -10,6 +10,7 @@ module io.zwt.ui {
   requires com.fasterxml.jackson.annotation;
 
   opens io.zwt to javafx.graphics;
-  opens io.zwt.domain.model to com.fasterxml.jackson.databind;
+  opens io.zwt.domain.model.cmd to com.fasterxml.jackson.databind;
+  opens io.zwt.domain.model.data to com.fasterxml.jackson.databind;
   opens io.zwt.controller to javafx.fxml, javafx.controls, javafx.graphics;
 }

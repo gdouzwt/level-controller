@@ -2,7 +2,7 @@ package io.zwt.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zwt.App;
-import io.zwt.domain.model.Whois;
+import io.zwt.domain.model.cmd.Whois;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,7 +17,7 @@ import java.util.ResourceBundle;
 /**
  * 主面板的控制器，界面交互逻辑写在这里。
  */
-public class PrimaryController implements Initializable {
+public class HomeController implements Initializable {
 
   @FXML
   private TextField cmdToSend;
