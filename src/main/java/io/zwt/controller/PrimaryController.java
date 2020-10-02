@@ -6,10 +6,7 @@ import io.zwt.domain.model.Whois;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
@@ -23,13 +20,20 @@ import java.util.ResourceBundle;
 public class PrimaryController implements Initializable {
 
   @FXML
-  Label label;
+  private TextField cmdToSend;
+  @FXML
+  private Button sendWhatever;
+  @FXML
+  private Button whois;
 
   @FXML
-  ColorPicker colorPicker;
+  private Label label;
 
   @FXML
-  Button button;
+  private ColorPicker colorPicker;
+
+  @FXML
+  private Button button;
 
   @FXML
   Button lampSwitch;
@@ -94,5 +98,10 @@ public class PrimaryController implements Initializable {
     ObjectMapper objectMapper = new ObjectMapper();
     String s = objectMapper.writeValueAsString(new Whois());
     App.sendWhois(s);
+  }
+
+  public void whatever(ActionEvent actionEvent) throws IOException {
+    String cmd = cmdToSend.getText();
+    App.sendWhatever(cmd);
   }
 }

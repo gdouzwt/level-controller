@@ -1,28 +1,35 @@
 package io.zwt.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRawValue;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.io.Serializable;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 @JsonPropertyOrder({"cmd", "model", "sid", "short_id", "token", "data"})
 public class HeartBeat implements Serializable {
   private StringProperty cmd;
   private StringProperty model;
   private StringProperty sid;
-  private StringProperty shortId;
+  //@JsonSerialize(using = ToStringSerializer.class)
+  private IntegerProperty shortId;
   private StringProperty token;
-  @JsonRawValue
-  private Data data;
+  @JsonRawValue(value = false)
+  private String data;
 
   public HeartBeat() {
     this.cmd = new SimpleStringProperty();
     this.model = new SimpleStringProperty();
     this.sid = new SimpleStringProperty();
-    this.shortId = new SimpleStringProperty();
+    this.shortId = new SimpleIntegerProperty();
     this.token = new SimpleStringProperty();
   }
 
@@ -63,15 +70,15 @@ public class HeartBeat implements Serializable {
   }
 
   @JsonProperty("short_id")
-  public String getShortId() {
+  public Integer getShortId() {
     return shortId.get();
   }
 
-  public StringProperty shortIdProperty() {
+  public IntegerProperty shortIdProperty() {
     return shortId;
   }
 
-  public void setShortId(String shortId) {
+  public void setShortId(Integer shortId) {
     this.shortIdProperty().set(shortId);
   }
 
@@ -87,11 +94,11 @@ public class HeartBeat implements Serializable {
     this.tokenProperty().set(token);
   }
 
-  public Data getData() {
+  public String getData() {
     return data;
   }
 
-  public void setData(Data data) {
+  public void setData(String data) {
     this.data = data;
   }
 

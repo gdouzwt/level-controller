@@ -111,6 +111,7 @@ public class App extends Application {
       .setOption(StandardSocketOptions.SO_REUSEADDR, true)
       .bind(new InetSocketAddress(PORT))
       .setOption(StandardSocketOptions.IP_MULTICAST_IF, ni);
+
     channel.join(multicastAddress, ni);
     channel.configureBlocking(false);
     Selector selector = Selector.open();
@@ -138,6 +139,12 @@ public class App extends Application {
     System.out.println(cmd);
   }
 
+  public static void sendWhatever(String cmd) throws IOException {
+    ByteBuffer to = ByteBuffer.wrap(cmd.getBytes());
+    channel.send(to, GATEWAY);
+    System.out.println(cmd);
+  }
+
   public static void togglePlug() throws IOException {
     isOn = !isOn;
     String writePlugData = WRITE_PLUG + (isOn ? OFF : ON) + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
@@ -161,8 +168,8 @@ public class App extends Application {
       String tokenString = receivedString.substring(tokenIndex + 8, tokenIndex + 24);
       byte[] cipher = SymmetricEncryption.performAESEncryption(tokenString, SECRET_KEY, INITIALIZATION_VECTOR);
       encryptedKey = DatatypeConverter.printHexBinary(cipher);
-      System.out.println(KEY_UPDATED);
-      System.out.println(encryptedKey);
+      //System.out.println(KEY_UPDATED);
+      //System.out.println(encryptedKey);
     }
     if (receivedString.contains("Invalid key")) {
       encryptedKey = null;

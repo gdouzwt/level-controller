@@ -159,9 +159,10 @@ public class LANTask extends Thread {
             dataRecord.address = selectedChannel.receive(dataRecord.buffer);
             if (dataRecord.address != null) {
               String data = app.onReceiveData(dataRecord.buffer);
-              if (data.contains("heartbeat")) {
+              if (data.contains("data")) {
                 HeartBeat beat = objectMapper.readValue(data, HeartBeat.class);
-                System.out.println(beat.getData());
+                //System.out.println(beat.getData());
+                System.out.println(objectMapper.writeValueAsString(beat));
               }
               // 发送到 MQTT
               //System.out.println("Publishing message: " + content);
