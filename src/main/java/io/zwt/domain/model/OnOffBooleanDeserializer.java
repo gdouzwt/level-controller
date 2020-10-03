@@ -8,6 +8,9 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 import java.io.IOException;
 
+/**
+ * 一个自定义的反序列化器类，用于将 on / off 反序列化为 true / false
+ */
 public class OnOffBooleanDeserializer extends JsonDeserializer<Boolean> {
 
   protected static final String ON = "on";

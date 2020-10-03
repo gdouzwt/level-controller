@@ -11,6 +11,8 @@ import io.zwt.domain.model.data.PlugReportData;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -19,15 +21,19 @@ import java.util.Iterator;
 
 import static io.zwt.App.encryptedKey;
 
+/**
+ * 后台线程，负责处理局域网相关的操作
+ */
 public class LANTask extends Thread {
 
-  private Selector selector;
-  private App app;
+  private final Selector selector;
+  private final App app;
   private StringProperty value;
   private StringProperty token;
   private StringProperty ip;
   private volatile SimpleObjectProperty<HeartBeat> heartBeat;
-  private ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper;
+  private final static Logger log = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
   public String getToken() {
     return token.get();
@@ -86,63 +92,11 @@ public class LANTask extends Thread {
     ip = new SimpleStringProperty();
     heartBeat = new SimpleObjectProperty<>();
 
-    /* Paho MQTT Client*/
-    /*String topic = "gdouzwt/feeds/light";
-    String content = "Message from MqttPublishSample";
-    int qos = 2;
-    String broker = "tcp://io.adafruit.com:1883";
-    String clientId = "9a78c480-ef23-4b0b-8977-417d9d47fd36";
-    MemoryPersistence persistence = new MemoryPersistence();
-    // mqtt setup
-    MqttClient sampleClient = null;
-    try {
-      sampleClient = new MqttClient(broker, clientId, persistence);
-    } catch (MqttException e) {
-      e.printStackTrace();
-    }
-    MqttConnectOptions connOpts = new MqttConnectOptions();
-    connOpts.setUserName("gdouzwt");
-    connOpts.setPassword("aio_dPae44yT5NI2jmIxNLfM3LmlqnXw".toCharArray());
-    //connOpts.set
-    connOpts.setCleanSession(true);
-    System.out.println("Connecting to broker: " + broker);
-    try {
-      sampleClient.connect(connOpts);
-      sampleClient.subscribe("gdouzwt/feeds/light");
-      sampleClient.setCallback(new MqttCallback() {
-        @Override
-        public void connectionLost(Throwable cause) {
-          System.out.println("Awesome!");
-        }
-
-        @Override
-        public void messageArrived(String topic, MqttMessage message) {
-          String received = new String(message.getPayload());
-          if (received.contains("write")) {
-            try {
-              App.channel.send(ByteBuffer.wrap(message.getPayload()), GATEWAY);
-            } catch (IOException ioException) {
-              ioException.printStackTrace();
-            }
-          }
-          Platform.runLater(() -> setIp(received));
-        }
-
-        @Override
-        public void deliveryComplete(IMqttDeliveryToken token) {
-          System.out.println("Something Good");
-        }
-      });
-    } catch (MqttException e) {
-      e.printStackTrace();
-    }
-    System.out.println("Connected");*/
-
     while (true) {
       try {
 
         if (selector.select(11000) == 0) {
-          System.out.println("Waiting for heartbeat sync...");
+          log.debug("Waiting for heartbeat sync...");
           continue;
         }
         for (Iterator<SelectionKey> iterator = selector.selectedKeys().iterator(); iterator.hasNext(); ) {
@@ -155,25 +109,16 @@ public class LANTask extends Thread {
             if (dataRecord.address != null) {
               String data = app.onReceiveData(dataRecord.buffer);
 
-
+              // 如果是网关的心跳
               if (data.contains("heartbeat") && data.contains("gateway")) {
                 HeartBeat beat = objectMapper.readValue(data, HeartBeat.class);
-                //System.out.println(beat.getData());
-                System.out.println(objectMapper.writeValueAsString(beat));
-              }
-              /*else if (data.contains("get_id_list_ack")) {
-                IdList idList = objectMapper.readValue(data, IdList.class);
-                System.out.println(objectMapper.writeValueAsString(idList));
-                System.out.println(idList);
-              } */
-
-              else {
+                log.debug(beat.getData());
+              } else {
                 if (data.contains("iam")) {
-                  System.out.println("Cool");
+                  log.debug(data);
                 } else {
                   Other other = objectMapper.readValue(data, Other.class);
-                  System.out.println(other.getData());
-                  System.out.println("----");
+                  log.debug(other.getData());
                   if (other.getCmd().equals("get_id_list_ack")) {  // 获取网关子设备
                     String[] strings = objectMapper.readValue(other.getData(), String[].class);
                     System.out.println("网关子设备 id: ");
@@ -183,25 +128,12 @@ public class LANTask extends Thread {
                     System.out.println();
                   }
 
-                  if (other.getCmd().equals("report") && other.getModel().equals("plug")) { // 插座报文更新
+                  if ((other.getCmd().equals("report") || other.getCmd().equals("read_ack")) && other.getModel().equals("plug")) { // 插座报文更新
                     PlugReportData plugReportData = objectMapper.readValue(other.getData(), PlugReportData.class);
                     HomeController.plugSelected.setValue(plugReportData.statusProperty().getValue());
-                    /*System.out.println("What is going on?");
-                    System.out.println(plugReportData.isStatus());
-                    System.out.println("HomeController " + HomeController.plugSelected.get());*/
                   }
-                  System.out.println(objectMapper.writeValueAsString(other));
                 }
               }
-              // 发送到 MQTT
-              //System.out.println("Publishing message: " + content);
-
-              /*MqttMessage message = new MqttMessage(beat.getData().toString().getBytes());
-              message.setQos(qos);
-              sampleClient.publish(topic, message);
-              System.out.println("Message published");*/
-
-              //Platform.runLater(() -> setIp(beat.getData().getContent()));
               if (encryptedKey != null) {
                 selectionKey.interestOps(SelectionKey.OP_WRITE);
               }
@@ -210,7 +142,8 @@ public class LANTask extends Thread {
           if (selectionKey.isValid() && selectionKey.isWritable()) {
             if (encryptedKey == null) {
               selectionKey.interestOps(SelectionKey.OP_READ);
-              break;
+              //break;
+              continue;
             } else {
               selectionKey.interestOps(SelectionKey.OP_READ);
             }

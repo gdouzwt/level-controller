@@ -4,6 +4,9 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
+/**
+ * 用于 AES 对称加密的工具类
+ */
 public class SymmetricEncryption {
 
   private static final String AES_CIPHER_ALGORITHM = "AES/CBC/NoPadding";

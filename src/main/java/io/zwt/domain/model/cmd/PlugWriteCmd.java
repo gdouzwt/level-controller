@@ -6,6 +6,4 @@ public class PlugWriteCmd implements Serializable {
 
   private String cmd;
   private String sid;
-
-
 }

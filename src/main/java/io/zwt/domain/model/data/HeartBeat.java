@@ -14,11 +14,11 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 @JsonPropertyOrder({"cmd", "model", "sid", "short_id", "token", "data"})
 public class HeartBeat implements Serializable {
-  private StringProperty cmd;
-  private StringProperty model;
-  private StringProperty sid;
-  private StringProperty shortId;
-  private StringProperty token;
+  private final StringProperty cmd;
+  private final StringProperty model;
+  private final StringProperty sid;
+  private final StringProperty shortId;
+  private final StringProperty token;
   @JsonRawValue(value = false)
   private String data;
 

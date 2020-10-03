@@ -1,5 +1,6 @@
 package io.zwt.domain.model.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.zwt.domain.model.OnOffBooleanDeserializer;
 import javafx.beans.property.BooleanProperty;
@@ -7,6 +8,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 
 import java.io.Serializable;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PlugReportData implements Serializable {
 
   public PlugReportData() {

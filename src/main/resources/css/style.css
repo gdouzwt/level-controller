@@ -1,7 +1,8 @@
-.root {
-
-}
-
-.color-picker {
-
+.jfx-toggle-button {
+  -jfx-toggle-color: #FAFAFA;
+  -jfx-untoggle-color: #FAFAFA;
+  -jfx-toggle-line-color: #00ff00;
+  -jfx-untoggle-line-color: #999999;
+  -jfx-size: 10.0;
+  -jfx-disable-visual-focus: false;
 }

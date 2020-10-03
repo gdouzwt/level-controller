@@ -1,6 +1,7 @@
 package io.zwt.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jfoenix.controls.JFXToggleButton;
 import io.zwt.App;
 import io.zwt.domain.model.cmd.Whois;
 import javafx.beans.property.BooleanProperty;
@@ -23,19 +24,12 @@ public class HomeController implements Initializable {
 
   @FXML
   private TextField cmdToSend;
-  @FXML
-  private Button sendWhatever;
-  @FXML
-  private Button whois;
-
-  @FXML
-  private Label label;
 
   @FXML
   private ColorPicker colorPicker;
 
   @FXML
-  private ToggleButton button;  // 插座开关
+  private ToggleButton plugToggleButton;  // 插座开关
 
   @FXML
   ToggleButton lampSwitch;
@@ -44,11 +38,13 @@ public class HomeController implements Initializable {
   Slider light;
 
   public static BooleanProperty plugSelected;
-
   public static boolean status;
   public static String color;
   public static int lightValue = 3;
 
+  /**
+   * Controller 的声明周期方法，在这里进行一些初始化
+   */
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     color = colorPicker.getValue().toString();
@@ -58,58 +54,69 @@ public class HomeController implements Initializable {
       status = Boolean.parseBoolean(lampStatus);
       color = resources.getString("lamp.color");
       colorPicker.setValue(Color.web(color));
-      //lampSwitch.setText(status ? "ON" : "OFF");
       plugSelected = new SimpleBooleanProperty();
-//      lampSwitch.selectedProperty().bind(plugSelected);
-      plugSelected.bindBidirectional(button.selectedProperty());
+      plugSelected.bindBidirectional(plugToggleButton.selectedProperty());
     }
   }
 
+  /**
+   * 开 / 关插座
+   */
   public void togglePlug(ActionEvent actionEvent) throws IOException {
     App.togglePlug();
   }
 
+  /**
+   * 更新网关彩灯颜色
+   */
   public void updateColor(ActionEvent actionEvent) throws IOException {
-    if (actionEvent.getSource().getClass().equals(Button.class)) {
-      BooleanProperty booleanProperty = lampSwitch.getToggleGroup().getSelectedToggle().selectedProperty();
-      if (booleanProperty.get()) {
+    if (actionEvent.getSource().getClass().equals(JFXToggleButton.class)) {
+      BooleanProperty booleanProperty = lampSwitch.selectedProperty();
+      if (!booleanProperty.get()) {
         App.updateRGB(-1, getColor(), 0);
         status = false;
-        //lampSwitch.setText("OFF");
       } else {
         App.updateRGB(1, getColor(), lightValue);
         status = true;
-        //lampSwitch.setText("ON");
       }
     } else {
       color = colorPicker.getValue().toString();
       App.updateRGB(0, getColor(), lightValue);
       status = true;
-      //lampSwitch.setText("ON");
     }
   }
 
+  /**
+   * 从颜色选择器得到的颜色值，再转成表示 RGB 的整数
+   */
   private int getColor() {
     String substring = color.substring(2, 8);
     return Integer.parseInt(substring, 16);
   }
 
+  /**
+   * 更新网关彩灯亮度
+   */
   public void updateLight(MouseEvent dragEvent) throws IOException {
     lightValue = (int) light.getValue();
     App.updateRGB(2, getColor(), lightValue);
     status = true;
-    //lampSwitch.setText("ON");
   }
 
+  /**
+   * 发送 whois 到组播地址
+   */
   public void sendWhois(ActionEvent actionEvent) throws IOException {
-
     ObjectMapper objectMapper = new ObjectMapper();
-    String s = objectMapper.writeValueAsString(new Whois());
-    App.sendWhois(s);
+    String toLocalMulticastAddress = objectMapper.writeValueAsString(new Whois());
+    App.sendWhois(toLocalMulticastAddress);
   }
 
-  public void whatever(ActionEvent actionEvent) throws IOException {
-    String cmd = cmdToSend.getText();
-    App.sendWhatever(cmd);
+  /**
+   * 发送任意内容到网关
+   */
+  public void sendWhatever(ActionEvent actionEvent) throws IOException {
+    String toGateway = cmdToSend.getText();
+    App.sendWhatever(toGateway);
   }
 }
