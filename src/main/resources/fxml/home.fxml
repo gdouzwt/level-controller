@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ColorPicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Slider?>
-<?import javafx.scene.control.TextField?>
+<?import com.jfoenix.controls.JFXToggleButton?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="914.0" stylesheets="@../css/style.css"
             xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.zwt.controller.HomeController">
-  <Button fx:id="button" layoutX="53.0" layoutY="42.0" mnemonicParsing="false" onAction="#togglePlug" prefHeight="61.0" prefWidth="90.0" text="插座" textFill="#4a4242"/>
+
+
+  <JFXToggleButton fx:id="button" layoutX="53.0" layoutY="42.0" onAction="#togglePlug" prefHeight="61.0" prefWidth="90.0"/>
+
   <ColorPicker fx:id="colorPicker" layoutX="358.0" layoutY="110.0" onAction="#updateColor"/>
-  <Button fx:id="lampSwitch" layoutX="251.0" layoutY="110.0" mnemonicParsing="false" onAction="#updateColor" prefHeight="23.0" prefWidth="52.0" text="-" textFill="#b56d6d"/>
-  <Label fx:id="label" layoutX="53.0" layoutY="177.0" minHeight="-Infinity" minWidth="-Infinity" text="Label"/>
+  <JFXToggleButton fx:id="lampSwitch" layoutX="251.0" layoutY="110.0" onAction="#updateColor" prefHeight="23.0" prefWidth="52.0"/>
+
   <Slider fx:id="light" layoutX="251.0" layoutY="42.0" majorTickUnit="10.0" onMouseDragged="#updateLight" onMouseReleased="#updateLight" prefHeight="32.0" prefWidth="513.0"
           showTickLabels="true" showTickMarks="true" value="3.0"/>
 

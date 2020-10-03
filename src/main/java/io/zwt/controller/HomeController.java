@@ -3,6 +3,8 @@ package io.zwt.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zwt.App;
 import io.zwt.domain.model.cmd.Whois;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -33,13 +35,15 @@ public class HomeController implements Initializable {
   private ColorPicker colorPicker;
 
   @FXML
-  private Button button;
+  private ToggleButton button;  // 插座开关
 
   @FXML
-  Button lampSwitch;
+  ToggleButton lampSwitch;
 
   @FXML
   Slider light;
+
+  public static BooleanProperty plugSelected;
 
   public static boolean status;
   public static String color;
@@ -54,7 +58,10 @@ public class HomeController implements Initializable {
       status = Boolean.parseBoolean(lampStatus);
       color = resources.getString("lamp.color");
       colorPicker.setValue(Color.web(color));
-      lampSwitch.setText(status ? "ON" : "OFF");
+      //lampSwitch.setText(status ? "ON" : "OFF");
+      plugSelected = new SimpleBooleanProperty();
+//      lampSwitch.selectedProperty().bind(plugSelected);
+      plugSelected.bindBidirectional(button.selectedProperty());
     }
   }
 
@@ -64,20 +71,21 @@ public class HomeController implements Initializable {
 
   public void updateColor(ActionEvent actionEvent) throws IOException {
     if (actionEvent.getSource().getClass().equals(Button.class)) {
-      if (status) {
+      BooleanProperty booleanProperty = lampSwitch.getToggleGroup().getSelectedToggle().selectedProperty();
+      if (booleanProperty.get()) {
         App.updateRGB(-1, getColor(), 0);
         status = false;
-        lampSwitch.setText("OFF");
+        //lampSwitch.setText("OFF");
       } else {
         App.updateRGB(1, getColor(), lightValue);
         status = true;
-        lampSwitch.setText("ON");
+        //lampSwitch.setText("ON");
       }
     } else {
       color = colorPicker.getValue().toString();
       App.updateRGB(0, getColor(), lightValue);
       status = true;
-      lampSwitch.setText("ON");
+      //lampSwitch.setText("ON");
     }
   }
 
@@ -90,7 +98,7 @@ public class HomeController implements Initializable {
     lightValue = (int) light.getValue();
     App.updateRGB(2, getColor(), lightValue);
     status = true;
-    lampSwitch.setText("ON");
+    //lampSwitch.setText("ON");
   }
 
   public void sendWhois(ActionEvent actionEvent) throws IOException {

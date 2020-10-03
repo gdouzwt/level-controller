@@ -3,9 +3,11 @@ package io.zwt.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zwt.App;
+import io.zwt.controller.HomeController;
 import io.zwt.domain.DataRecord;
 import io.zwt.domain.model.data.HeartBeat;
 import io.zwt.domain.model.data.Other;
+import io.zwt.domain.model.data.PlugReportData;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -153,6 +155,7 @@ public class LANTask extends Thread {
             if (dataRecord.address != null) {
               String data = app.onReceiveData(dataRecord.buffer);
 
+
               if (data.contains("heartbeat") && data.contains("gateway")) {
                 HeartBeat beat = objectMapper.readValue(data, HeartBeat.class);
                 //System.out.println(beat.getData());
@@ -171,13 +174,21 @@ public class LANTask extends Thread {
                   Other other = objectMapper.readValue(data, Other.class);
                   System.out.println(other.getData());
                   System.out.println("----");
-                  if (other.getCmd().equals("get_id_list_ack")) {
+                  if (other.getCmd().equals("get_id_list_ack")) {  // 获取网关子设备
                     String[] strings = objectMapper.readValue(other.getData(), String[].class);
                     System.out.println("网关子设备 id: ");
                     for (String string : strings) {
                       System.out.printf("%s\t", string);
                     }
                     System.out.println();
+                  }
+
+                  if (other.getCmd().equals("report") && other.getModel().equals("plug")) { // 插座报文更新
+                    PlugReportData plugReportData = objectMapper.readValue(other.getData(), PlugReportData.class);
+                    HomeController.plugSelected.setValue(plugReportData.statusProperty().getValue());
+                    /*System.out.println("What is going on?");
+                    System.out.println(plugReportData.isStatus());
+                    System.out.println("HomeController " + HomeController.plugSelected.get());*/
                   }
                   System.out.println(objectMapper.writeValueAsString(other));
                 }

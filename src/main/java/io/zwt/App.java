@@ -65,13 +65,12 @@ public class App extends Application {
   @Override
   public void start(Stage stage) throws Exception {
     Parent parent = FXMLLoader.load(getClass().getResource("/fxml/home.fxml"), resourceBundle);
-    button = (Button) parent.lookup("#button");
-    button.setBackground(new Background(new BackgroundFill(Paint.valueOf("grey"), new CornerRadii(12), null)));
-    Label label = (Label) parent.lookup("#label");
+
+    /*Label label = (Label) parent.lookup("#label");
 
     label.textProperty().bind(new When(task.ipProperty().isNull())
       .then("Receiving data...")
-      .otherwise(task.ipProperty()));
+      .otherwise(task.ipProperty()));*/
     Scene scene = new Scene(parent);
     stage.setScene(scene);
     stage.setTitle(APP_TITLE);
