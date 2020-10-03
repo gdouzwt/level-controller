@@ -12,8 +12,8 @@ public class Config {
   public static final String KEY_UPDATED = "************************************************************* KEY UPDATED **************************************************************";
   public static final String ON = "\\\"on\\\"";
   public static final String OFF = "\\\"off\\\"";
-  public static final String WRITE_PLUG = "{\"cmd\":\"write\",\"model\": \"plug\",\"sid\":\"158d000234727c\",\"short_id\":38455,\"data\": \"{\\\"status\\\":";
-  public static final String NEW_RGB_CMD_HEAD = "{\"cmd\":\"write\",\"sid\":\"7811dcf981c4\",\"short_id\":0,\"data\":\"{\\\"rgb\\\":";
+  public static final String WRITE_PLUG = "{\"cmd\":\"write\",\"sid\":\"158d000234727c\",\"data\": \"{\\\"status\\\":";
+  public static final String NEW_RGB_CMD_HEAD = "{\"cmd\":\"write\",\"sid\":\"7811dcf981c4\",\"data\":\"{\\\"rgb\\\":";
   public static final String KEY_JSON_ATTR = ",\\\"key\\\":\\\"";
   public static final String CMD_TRAILER = "\\\"}\"}";
   public static final String SECRET = "07wjrkc41typdvae";

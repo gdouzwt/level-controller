@@ -6,22 +6,16 @@ import io.zwt.App;
 import io.zwt.domain.DataRecord;
 import io.zwt.domain.model.data.HeartBeat;
 import io.zwt.domain.model.data.Other;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import org.eclipse.paho.client.mqttv3.*;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Iterator;
 
 import static io.zwt.App.encryptedKey;
-import static io.zwt.config.Config.GATEWAY;
 
 public class LANTask extends Thread {
 
@@ -91,7 +85,7 @@ public class LANTask extends Thread {
     heartBeat = new SimpleObjectProperty<>();
 
     /* Paho MQTT Client*/
-    String topic = "gdouzwt/feeds/light";
+    /*String topic = "gdouzwt/feeds/light";
     String content = "Message from MqttPublishSample";
     int qos = 2;
     String broker = "tcp://io.adafruit.com:1883";
@@ -140,7 +134,7 @@ public class LANTask extends Thread {
     } catch (MqttException e) {
       e.printStackTrace();
     }
-    System.out.println("Connected");
+    System.out.println("Connected");*/
 
     while (true) {
       try {
@@ -158,21 +152,44 @@ public class LANTask extends Thread {
             dataRecord.address = selectedChannel.receive(dataRecord.buffer);
             if (dataRecord.address != null) {
               String data = app.onReceiveData(dataRecord.buffer);
+
               if (data.contains("heartbeat") && data.contains("gateway")) {
                 HeartBeat beat = objectMapper.readValue(data, HeartBeat.class);
                 //System.out.println(beat.getData());
                 System.out.println(objectMapper.writeValueAsString(beat));
-              } else {
-                Other other = objectMapper.readValue(data, Other.class);
-                System.out.println(objectMapper.writeValueAsString(other));
+              }
+              /*else if (data.contains("get_id_list_ack")) {
+                IdList idList = objectMapper.readValue(data, IdList.class);
+                System.out.println(objectMapper.writeValueAsString(idList));
+                System.out.println(idList);
+              } */
+
+              else {
+                if (data.contains("iam")) {
+                  System.out.println("Cool");
+                } else {
+                  Other other = objectMapper.readValue(data, Other.class);
+                  System.out.println(other.getData());
+                  System.out.println("----");
+                  if (other.getCmd().equals("get_id_list_ack")) {
+                    String[] strings = objectMapper.readValue(other.getData(), String[].class);
+                    System.out.println("网关子设备 id: ");
+                    for (String string : strings) {
+                      System.out.printf("%s\t", string);
+                    }
+                    System.out.println();
+                  }
+                  System.out.println(objectMapper.writeValueAsString(other));
+                }
               }
               // 发送到 MQTT
               //System.out.println("Publishing message: " + content);
+
               /*MqttMessage message = new MqttMessage(beat.getData().toString().getBytes());
               message.setQos(qos);
               sampleClient.publish(topic, message);
               System.out.println("Message published");*/
-              // System.exit(0);
+
               //Platform.runLater(() -> setIp(beat.getData().getContent()));
               if (encryptedKey != null) {
                 selectionKey.interestOps(SelectionKey.OP_WRITE);
