@@ -43,6 +43,7 @@ public class App extends Application {
    */
   @Override
   public void init() throws Exception {
+
     File file = new File(HOME + "/preference.properties");
     if (file.createNewFile()) {
       Properties properties = new Properties();
