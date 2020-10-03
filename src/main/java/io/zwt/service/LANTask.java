@@ -11,8 +11,8 @@ import io.zwt.domain.model.data.PlugReportData;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -33,7 +33,7 @@ public class LANTask extends Thread {
   private StringProperty ip;
   private volatile SimpleObjectProperty<HeartBeat> heartBeat;
   private final ObjectMapper objectMapper;
-  private final static Logger log = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
+  static final Logger log = LoggerFactory.getLogger(LANTask.class);
 
   public String getToken() {
     return token.get();

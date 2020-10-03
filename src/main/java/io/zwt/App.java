@@ -9,8 +9,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
@@ -32,7 +32,7 @@ public class App extends Application {
   public static DatagramChannel channel = null;
   private ResourceBundle resourceBundle;
   public static String HOME = System.getProperty("user.home");
-  private final static Logger log = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
+  static final Logger log = LoggerFactory.getLogger(App.class);
   LANTask task;  // 局域网通信的一些
 
   /**
