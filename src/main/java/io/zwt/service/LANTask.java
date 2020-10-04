@@ -114,11 +114,11 @@ public class LANTask extends Thread {
               // 如果是网关的心跳
               if (data.contains("heartbeat") && data.contains("gateway")) {
                 HeartBeat beat = objectMapper.readValue(data, HeartBeat.class);
-                log.debug(beat.getData());
+                //log.debug(beat.getData());
               } else {
                 if (data.contains("iam")) {
                   IAm iAm = objectMapper.readValue(data, IAm.class);
-                  log.debug(iAm.toString());
+
                 } else {
                   Other other = objectMapper.readValue(data, Other.class);
                   log.debug(other.getData());

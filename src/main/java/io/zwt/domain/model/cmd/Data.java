@@ -57,12 +57,4 @@ public class Data implements Serializable {
     this.key = key;
   }
 
-  @Override
-  public String toString() {
-    return "Data{" +
-      "status=" + status +
-      ", rgb=" + rgb +
-      ", key='" + key + '\'' +
-      '}';
-  }
 }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import java.io.Serializable;
 
 public class WriteCmd implements Serializable {
-  private String cmd;
+  private final String cmd;
   private String sid;
   @JsonRawValue(value = false)
   private String data;

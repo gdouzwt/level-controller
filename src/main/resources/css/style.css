@@ -6,3 +6,29 @@
   -jfx-size: 10.0;
   -jfx-disable-visual-focus: false;
 }
+
+/* Styling the slider track */
+.jfx-slider > .track {
+  -fx-background-color: #999999;
+}
+
+/* Styling the slider thumb */
+.jfx-slider > .thumb {
+  -fx-background-color: #d9d957;
+}
+
+/* Styling the filled track */
+.jfx-slider > .colored-track {
+  -fx-background-color: #e5c762;
+}
+
+/* Styling the animated thumb */
+.jfx-slider > .animated-thumb {
+  -fx-background-color: #999999;
+}
+
+/* Styling the slider value text inside animated thumb */
+.jfx-slider .slider-value {
+  -fx-fill: #e5c762;
+  -fx-stroke: yellow;
+}

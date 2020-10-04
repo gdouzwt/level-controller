@@ -1,7 +1,6 @@
 package io.zwt.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jfoenix.controls.JFXTimePicker;
 import com.jfoenix.controls.JFXToggleButton;
 import io.zwt.App;
 import io.zwt.domain.model.cmd.Whois;
@@ -79,18 +78,29 @@ public class HomeController implements Initializable {
   public void updateColor(ActionEvent actionEvent) throws IOException {
     if (actionEvent.getSource().getClass().equals(JFXToggleButton.class)) {
       BooleanProperty booleanProperty = lampSwitch.selectedProperty();
-      if (status = !booleanProperty.get()) {
+      if (status = !booleanProperty.get()) {  // 想关灯
         App.updateRGB(getColor(), 0);
         status = false;
       } else {
-        App.updateRGB(getColor(), lightValue);
+        if (lightValue == 0) {
+          App.updateRGB(getColor(), 30);
+          light.setValue(30);
+        } else {
+          App.updateRGB(getColor(), lightValue);
+        }
         status = true;
       }
     } else {
       color = colorPicker.getValue().toString();
-      App.updateRGB(getColor(), lightValue);
+      if (lightValue == 0) {
+        App.updateRGB(getColor(), 30);
+        light.setValue(30);
+      } else {
+        App.updateRGB(getColor(), lightValue);
+      }
       status = true;
     }
+    lampSwitch.selectedProperty().set(status);
   }
 
   /**
