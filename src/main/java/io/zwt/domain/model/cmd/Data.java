@@ -16,8 +16,8 @@ import java.io.Serializable;
 public class Data implements Serializable {
 
   @JsonSerialize(using = OnOffBooleanSerializer.class)
-  private BooleanProperty status;
-  private IntegerProperty rgb;
+  private final BooleanProperty status;
+  private final IntegerProperty rgb;
   private String key;
 
   public Data() {

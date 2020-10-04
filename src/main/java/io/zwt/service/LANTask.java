@@ -6,6 +6,7 @@ import io.zwt.App;
 import io.zwt.controller.HomeController;
 import io.zwt.domain.DataRecord;
 import io.zwt.domain.model.cmd.Data;
+import io.zwt.domain.model.cmd.IAm;
 import io.zwt.domain.model.data.HeartBeat;
 import io.zwt.domain.model.data.Other;
 import io.zwt.domain.model.data.PlugReportData;
@@ -116,7 +117,8 @@ public class LANTask extends Thread {
                 log.debug(beat.getData());
               } else {
                 if (data.contains("iam")) {
-                  log.debug(data);
+                  IAm iAm = objectMapper.readValue(data, IAm.class);
+                  log.debug(iAm.toString());
                 } else {
                   Other other = objectMapper.readValue(data, Other.class);
                   log.debug(other.getData());
