@@ -27,8 +27,6 @@ import java.util.ResourceBundle;
 public class HomeController implements Initializable {
 
   @FXML
-  public JFXTimePicker timePicker;
-  @FXML
   private TextField cmdToSend;
 
   @FXML

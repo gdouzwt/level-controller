@@ -31,8 +31,6 @@ import static io.zwt.config.Config.*;
 
 public class App extends Application {
 
-  public static final String GATEWAY_SID = "7811dcf981c4";
-  public static final String PLUG_SID = "158d000234727c";
   public static volatile String encryptedKey;
   public static DatagramChannel channel = null;
   private ResourceBundle resourceBundle;
@@ -44,7 +42,6 @@ public class App extends Application {
    * JavaFX 应用的生命周期方法
    * 启动 JavaFX Application Thread 之前的一些初始化操作。不能操作 SceneGraph
    *
-   * @throws Exception
    */
   @Override
   public void init() throws Exception {
@@ -71,7 +68,6 @@ public class App extends Application {
    * JavaFX 应用的生命周期方法
    * 应用从这里启动， JavaFX Application Thread
    *
-   * @throws Exception
    */
   @Override
   public void start(Stage stage) throws Exception {
@@ -86,11 +82,10 @@ public class App extends Application {
    * JavaFX 应用的生命周期方法
    * 在这里放一些退出应用时进行收尾工作的逻辑，现在是将彩灯状态保存到 properties 文件
    *
-   * @throws Exception
    */
   @Override
   public void stop() throws Exception {
-    System.out.println("Saving preference...");
+    log.debug("Saving preference...");
     try {
       Properties properties = new Properties();
       properties.setProperty("lamp.status", String.valueOf(HomeController.status));
@@ -106,7 +101,6 @@ public class App extends Application {
    * 获取 NIO 的选择器
    *
    * @return 选择器
-   * @throws IOException
    */
   private static Selector getSelector() throws IOException {
     NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
@@ -140,7 +134,6 @@ public class App extends Application {
    *
    * @param colorValue 颜色的数值
    * @param light      亮度？
-   * @throws IOException
    */
   public static void updateRGB(final int colorValue, final int light) throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
@@ -164,7 +157,6 @@ public class App extends Application {
    * 发送 whois 命令到本地网络接口的 UDP 组播地址，等待网关回应其所在 IP 地址
    *
    * @param cmd 发送 whois
-   * @throws IOException
    */
   public static void sendWhois(String cmd) throws IOException {
     ByteBuffer to = ByteBuffer.wrap(cmd.getBytes());
@@ -177,7 +169,6 @@ public class App extends Application {
    * 发送任意内容
    *
    * @param cmd 要被发送的命令
-   * @throws IOException
    */
   public static void sendWhatever(String cmd) throws IOException {
     ByteBuffer to = ByteBuffer.wrap(cmd.getBytes());
@@ -188,7 +179,6 @@ public class App extends Application {
   /**
    * 对米家智能插座进行开关控制
    *
-   * @throws IOException
    */
   public static void togglePlug() throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
