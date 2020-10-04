@@ -38,3 +38,4 @@
 {"cmd":"read", "sid":"158d000223f246"}
 ```
 
+![数据包结构](img/datagram-structure.png)
