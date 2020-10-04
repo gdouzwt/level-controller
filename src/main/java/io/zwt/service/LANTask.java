@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zwt.App;
 import io.zwt.controller.HomeController;
 import io.zwt.domain.DataRecord;
+import io.zwt.domain.model.cmd.Data;
 import io.zwt.domain.model.data.HeartBeat;
 import io.zwt.domain.model.data.Other;
 import io.zwt.domain.model.data.PlugReportData;
@@ -127,10 +128,15 @@ public class LANTask extends Thread {
                     }
                     System.out.println();
                   }
-
-                  if ((other.getCmd().equals("report") || other.getCmd().equals("read_ack")) && other.getModel().equals("plug")) { // 插座报文更新
-                    PlugReportData plugReportData = objectMapper.readValue(other.getData(), PlugReportData.class);
-                    HomeController.plugSelected.setValue(plugReportData.statusProperty().getValue());
+                  if ((other.getCmd().equals("report") || other.getCmd().equals("read_ack"))) {
+                    if (other.getModel().equals("gateway")) {
+                      Data lampDataReport = objectMapper.readValue(other.getData(), Data.class);
+                      HomeController.lampSelected.setValue((lampDataReport.rgbProperty().getValue() & 0xff << 24) > 0);
+                    }
+                    if (other.getModel().equals("plug")) {
+                      PlugReportData plugReportData = objectMapper.readValue(other.getData(), PlugReportData.class);
+                      HomeController.plugSelected.setValue(plugReportData.statusProperty().getValue());
+                    }
                   }
                 }
               }

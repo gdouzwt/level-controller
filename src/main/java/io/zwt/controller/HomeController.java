@@ -1,6 +1,7 @@
 package io.zwt.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jfoenix.controls.JFXTimePicker;
 import com.jfoenix.controls.JFXToggleButton;
 import io.zwt.App;
 import io.zwt.domain.model.cmd.Whois;
@@ -9,7 +10,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
@@ -22,6 +26,8 @@ import java.util.ResourceBundle;
  */
 public class HomeController implements Initializable {
 
+  @FXML
+  public JFXTimePicker timePicker;
   @FXML
   private TextField cmdToSend;
 
@@ -38,6 +44,7 @@ public class HomeController implements Initializable {
   Slider light;
 
   public static BooleanProperty plugSelected;
+  public static BooleanProperty lampSelected;
   public static boolean status;
   public static String color;
   public static int lightValue = 3;
@@ -56,6 +63,8 @@ public class HomeController implements Initializable {
       colorPicker.setValue(Color.web(color));
       plugSelected = new SimpleBooleanProperty();
       plugSelected.bindBidirectional(plugToggleButton.selectedProperty());
+      lampSelected = new SimpleBooleanProperty();
+      lampSelected.bindBidirectional(lampSwitch.selectedProperty());
     }
   }
 
@@ -72,16 +81,16 @@ public class HomeController implements Initializable {
   public void updateColor(ActionEvent actionEvent) throws IOException {
     if (actionEvent.getSource().getClass().equals(JFXToggleButton.class)) {
       BooleanProperty booleanProperty = lampSwitch.selectedProperty();
-      if (!booleanProperty.get()) {
-        App.updateRGB(-1, getColor(), 0);
+      if (status = !booleanProperty.get()) {
+        App.updateRGB(getColor(), 0);
         status = false;
       } else {
-        App.updateRGB(1, getColor(), lightValue);
+        App.updateRGB(getColor(), lightValue);
         status = true;
       }
     } else {
       color = colorPicker.getValue().toString();
-      App.updateRGB(0, getColor(), lightValue);
+      App.updateRGB(getColor(), lightValue);
       status = true;
     }
   }
@@ -99,8 +108,8 @@ public class HomeController implements Initializable {
    */
   public void updateLight(MouseEvent dragEvent) throws IOException {
     lightValue = (int) light.getValue();
-    App.updateRGB(2, getColor(), lightValue);
-    status = true;
+    App.updateRGB(getColor(), lightValue);
+    lampSwitch.selectedProperty().set(lightValue > 0);
   }
 
   /**

@@ -1,7 +1,10 @@
 package io.zwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zwt.controller.HomeController;
 import io.zwt.domain.DataRecord;
+import io.zwt.domain.model.cmd.Data;
+import io.zwt.domain.model.cmd.WriteCmd;
 import io.zwt.service.LANTask;
 import io.zwt.util.SymmetricEncryption;
 import javafx.application.Application;
@@ -28,6 +31,8 @@ import static io.zwt.config.Config.*;
 
 public class App extends Application {
 
+  public static final String GATEWAY_SID = "7811dcf981c4";
+  public static final String PLUG_SID = "158d000234727c";
   public static volatile String encryptedKey;
   public static DatagramChannel channel = null;
   private ResourceBundle resourceBundle;
@@ -133,21 +138,24 @@ public class App extends Application {
   /**
    * 更新网关彩灯颜色和亮度
    *
-   * @param mode       开还是关，需要更改
    * @param colorValue 颜色的数值
    * @param light      亮度？
    * @throws IOException
    */
-  public static void updateRGB(final int mode, final int colorValue, final int light) throws IOException {
-    String cmd;
-    if (mode == -1) {
-      cmd = NEW_RGB_CMD_HEAD + ((light << 24) | colorValue) + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
-    } else {
-      cmd = NEW_RGB_CMD_HEAD + ((light << 24) | colorValue) + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
-    }
-    ByteBuffer to = ByteBuffer.wrap(cmd.getBytes());
+  public static void updateRGB(final int colorValue, final int light) throws IOException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    WriteCmd writeCmd = new WriteCmd();
+    writeCmd.setSid(GATEWAY_SID);
+    Data data = new Data();
+    data.statusProperty().setValue(null);
+    data.setKey(encryptedKey);
+    int rgb = (light << 24) | colorValue;
+    data.setRgb(rgb);
+    writeCmd.setData(objectMapper.writeValueAsString(data));
+    String cmd = objectMapper.writeValueAsString(writeCmd);
+
     if (encryptedKey != null) {
-      channel.send(to, GATEWAY_UNICAST_ADDRESS);
+      sendWhatever(cmd);
       log.debug(cmd);
     }
   }
@@ -183,11 +191,18 @@ public class App extends Application {
    * @throws IOException
    */
   public static void togglePlug() throws IOException {
-    // 不用状态量了，通过 plugSelected 属性来开关
-    String cmd = WRITE_PLUG + (HomeController.plugSelected.get() ? ON : OFF) + KEY_JSON_ATTR + encryptedKey + CMD_TRAILER;
-    ByteBuffer to = ByteBuffer.wrap(cmd.getBytes());
+    ObjectMapper objectMapper = new ObjectMapper();
+    WriteCmd writeCmd = new WriteCmd();
+    writeCmd.setSid(PLUG_SID);
+    Data data = new Data();
+    data.setStatus(HomeController.plugSelected.get());
+    data.rgbProperty().setValue(null);
+    data.setKey(encryptedKey);
+    writeCmd.setData(objectMapper.writeValueAsString(data));
+    String cmd = objectMapper.writeValueAsString(writeCmd);
+
     if (encryptedKey != null) {
-      channel.send(to, GATEWAY_UNICAST_ADDRESS);
+      sendWhatever(cmd);
     }
     log.debug(cmd);
   }
