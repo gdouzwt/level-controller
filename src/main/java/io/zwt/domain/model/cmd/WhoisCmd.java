@@ -2,14 +2,14 @@ package io.zwt.domain.model.cmd;
 
 import java.io.Serializable;
 
-public class Whois implements Serializable {
+public class WhoisCmd implements Serializable {
   private final String cmd;
 
   public String getCmd() {
     return cmd;
   }
 
-  public Whois() {
+  public WhoisCmd() {
     this.cmd = "whois";
   }
 }

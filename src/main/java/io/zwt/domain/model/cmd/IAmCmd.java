@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 
-public class IAm implements Serializable {
+public class IAmCmd implements Serializable {
 
   private String cmd;
   private String port;

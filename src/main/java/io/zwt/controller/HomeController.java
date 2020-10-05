@@ -3,7 +3,7 @@ package io.zwt.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXToggleButton;
 import io.zwt.App;
-import io.zwt.domain.model.cmd.Whois;
+import io.zwt.domain.model.cmd.WhoisCmd;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
@@ -125,7 +125,7 @@ public class HomeController implements Initializable {
    */
   public void sendWhois(ActionEvent actionEvent) throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
-    String toLocalMulticastAddress = objectMapper.writeValueAsString(new Whois());
+    String toLocalMulticastAddress = objectMapper.writeValueAsString(new WhoisCmd());
     App.sendWhois(toLocalMulticastAddress);
   }
 

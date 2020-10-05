@@ -1,4 +1,4 @@
-package io.zwt.domain.model.data;
+package io.zwt.domain.model.cmd;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,7 +13,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
 @JsonPropertyOrder({"cmd", "model", "sid", "short_id", "token", "data"})
-public class HeartBeat implements Serializable {
+public class HeartBeatCmd implements Serializable {
   private final StringProperty cmd;
   private final StringProperty model;
   private final StringProperty sid;
@@ -22,7 +22,7 @@ public class HeartBeat implements Serializable {
   @JsonRawValue(value = false)
   private String data;
 
-  public HeartBeat() {
+  public HeartBeatCmd() {
     this.cmd = new SimpleStringProperty();
     this.model = new SimpleStringProperty();
     this.sid = new SimpleStringProperty();

@@ -6,8 +6,8 @@ import io.zwt.App;
 import io.zwt.controller.HomeController;
 import io.zwt.domain.DataRecord;
 import io.zwt.domain.model.cmd.Data;
-import io.zwt.domain.model.cmd.IAm;
-import io.zwt.domain.model.data.HeartBeat;
+import io.zwt.domain.model.cmd.IAmCmd;
+import io.zwt.domain.model.cmd.HeartBeatCmd;
 import io.zwt.domain.model.data.Other;
 import io.zwt.domain.model.data.PlugReportData;
 import javafx.beans.property.SimpleObjectProperty;
@@ -33,7 +33,7 @@ public class LANTask extends Thread {
   private StringProperty value;
   private StringProperty token;
   private StringProperty ip;
-  private volatile SimpleObjectProperty<HeartBeat> heartBeat;
+  private volatile SimpleObjectProperty<HeartBeatCmd> heartBeat;
   private final ObjectMapper objectMapper;
   static final Logger log = LoggerFactory.getLogger(LANTask.class);
 
@@ -49,16 +49,16 @@ public class LANTask extends Thread {
     this.token.set(token);
   }
 
-  public HeartBeat getHeartBeat() {
+  public HeartBeatCmd getHeartBeat() {
     return heartBeat.get();
   }
 
-  public SimpleObjectProperty<HeartBeat> heartBeatProperty() {
+  public SimpleObjectProperty<HeartBeatCmd> heartBeatProperty() {
     return heartBeat;
   }
 
-  public void setHeartBeat(HeartBeat heartBeat) {
-    this.heartBeat.set(heartBeat);
+  public void setHeartBeat(HeartBeatCmd heartBeatCmd) {
+    this.heartBeat.set(heartBeatCmd);
   }
 
   public StringProperty valueProperty() {
@@ -113,11 +113,11 @@ public class LANTask extends Thread {
 
               // 如果是网关的心跳
               if (data.contains("heartbeat") && data.contains("gateway")) {
-                HeartBeat beat = objectMapper.readValue(data, HeartBeat.class);
+                HeartBeatCmd beat = objectMapper.readValue(data, HeartBeatCmd.class);
                 //log.debug(beat.getData());
               } else {
                 if (data.contains("iam")) {
-                  IAm iAm = objectMapper.readValue(data, IAm.class);
+                  IAmCmd iAmCmd = objectMapper.readValue(data, IAmCmd.class);
 
                 } else {
                   Other other = objectMapper.readValue(data, Other.class);
