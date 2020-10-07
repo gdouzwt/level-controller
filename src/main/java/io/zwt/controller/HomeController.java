@@ -74,13 +74,13 @@ public class HomeController implements Initializable {
     water.progressProperty().bindBidirectional(level);
     level.addListener((observable, oldValue, newValue) -> {
 
-      BigDecimal bigDecimal = BigDecimal.valueOf((double) newValue).setScale(2, RoundingMode.HALF_UP);
-      Platform.runLater(() -> waterPercentage.setText(bigDecimal.doubleValue() * 100 + "%"));
+      BigDecimal bigDecimal = BigDecimal.valueOf((double) newValue).setScale(3, RoundingMode.HALF_UP);
+      Platform.runLater(() -> waterPercentage.setText(bigDecimal.multiply(BigDecimal.valueOf(100.0).setScale(-2, RoundingMode.HALF_UP)) + "%"));
       cmdToSend.setText("{\"cmd\":\"read\", \"sid\":\"158d000234727c\"}");
       try {
         sendWhatever(null);
-        System.out.println(bigDecimal.doubleValue() * 100 + "%");
-        if (bigDecimal.doubleValue() > 0.90) {
+        //System.out.println(bigDecimal.doubleValue() * 100 + "%");
+        if (bigDecimal.doubleValue() > 0.95) {
           plugSelected.set(false);
           togglePlug(null);
         } else if (bigDecimal.doubleValue() < 0.40) {

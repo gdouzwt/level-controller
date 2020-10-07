@@ -3,8 +3,8 @@ module io.zwt.ui {
   requires java.xml.bind;
   requires javafx.graphics;
   requires javafx.fxml;
-  //requires javafx.controls;
   requires org.slf4j;
+  requires org.slf4j.jul;
   requires com.fasterxml.jackson.databind;
   requires com.jfoenix;
   requires org.controlsfx.controls;
