@@ -47,6 +47,8 @@ public class App extends Application {
   @Override
   public void init() throws Exception {
 
+    System.out.println("是否打开了调试: " + (log.isDebugEnabled() ? "是" : "否"));
+
     File file = new File(HOME + "/preference.properties");
     if (file.createNewFile()) {
       Properties properties = new Properties();

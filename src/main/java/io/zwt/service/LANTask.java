@@ -89,7 +89,6 @@ public class LANTask extends Thread {
     this.selector = selector;
     this.app = app;
     this.objectMapper = new ObjectMapper().configure(DeserializationFeature.EAGER_DESERIALIZER_FETCH, true);
-    System.out.println(log.isDebugEnabled());
   }
 
   @Override
@@ -147,8 +146,8 @@ public class LANTask extends Thread {
                         if (null != HomeController.level) {
                           HomeController.level.setValue(((108 - v) / 100));
                         }
-                        System.out.println("v" + v);
-                        System.out.println("doubles" + doubles);
+                        log.debug("v " + v);
+                        log.debug("doubles " + doubles);
                         doubles.clear();
                       }
                     }
