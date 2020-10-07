@@ -28,6 +28,8 @@ public class OnOffBooleanDeserializer extends JsonDeserializer<Boolean> {
         return Boolean.TRUE;
       } else if (OFF.equalsIgnoreCase(text)) {
         return Boolean.FALSE;
+      } else if ("unknown".equals(text)) {
+        return Boolean.FALSE;
       }
       throw ctxt.weirdStringException(text, Boolean.class,
         "Only \"" + ON + "\" or \"" + OFF + "\" values supported");

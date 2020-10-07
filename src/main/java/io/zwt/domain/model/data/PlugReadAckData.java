@@ -5,7 +5,7 @@ import javafx.beans.property.StringProperty;
 
 import java.io.Serializable;
 
-public class PlugReadAck implements Serializable {
+public class PlugReadAckData implements Serializable {
 
   private IntegerProperty voltage;
   private StringProperty status;
@@ -75,7 +75,7 @@ public class PlugReadAck implements Serializable {
 
   @Override
   public String toString() {
-    return "PlugReadAck{" +
+    return "PlugReadAck {" +
       "voltage=" + voltage +
       ", status=" + status +
       ", inuse=" + inuse +

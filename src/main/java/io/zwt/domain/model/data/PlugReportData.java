@@ -16,7 +16,7 @@ public class PlugReportData implements Serializable {
   }
 
   @JsonDeserialize(using = OnOffBooleanDeserializer.class)
-  private BooleanProperty status;
+  private final BooleanProperty status;
 
   public boolean isStatus() {
     return status.get();

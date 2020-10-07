@@ -11,17 +11,64 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
 @JsonPropertyOrder({"cmd", "model", "sid", "short_id", "token", "data"})
-public class Other implements Serializable {
-  private StringProperty cmd;
-  private StringProperty model;
-  private StringProperty sid;
+public class GenericData implements Serializable {
+  private final StringProperty cmd;
+  private final StringProperty model;
+  private final StringProperty sid;
   //@JsonSerialize(using = ToStringSerializer.class)
   private Integer shortId;
-  private StringProperty token;
+  private final StringProperty token;
+
+  private String illumination;
+  private Integer mid;
+  private String joinPermission;
+  private String removeDevice;
+  private String level;
+
+  public String getLevel() {
+    return level;
+  }
+
+  public void setLevel(String level) {
+    this.level = level;
+  }
+
+  public String getIllumination() {
+    return illumination;
+  }
+
+  public void setIllumination(String illumination) {
+    this.illumination = illumination;
+  }
+
+  public Integer getMid() {
+    return mid;
+  }
+
+  public void setMid(Integer mid) {
+    this.mid = mid;
+  }
+
+  public String getJoinPermission() {
+    return joinPermission;
+  }
+
+  public void setJoinPermission(String joinPermission) {
+    this.joinPermission = joinPermission;
+  }
+
+  public String getRemoveDevice() {
+    return removeDevice;
+  }
+
+  public void setRemoveDevice(String removeDevice) {
+    this.removeDevice = removeDevice;
+  }
+
   @JsonRawValue(value = false)
   private String data;
 
-  public Other() {
+  public GenericData() {
     this.cmd = new SimpleStringProperty();
     this.model = new SimpleStringProperty();
     this.sid = new SimpleStringProperty();
@@ -93,15 +140,4 @@ public class Other implements Serializable {
     this.data = data;
   }
 
-  @Override
-  public String toString() {
-    return "HeartBeat {" +
-      "cmd='" + cmd.get() + '\'' +
-      ", model='" + model.get() + '\'' +
-      ", sid='" + sid.get() + '\'' +
-      ", shortId='" + shortId + '\'' +
-      ", token='" + token.get() + '\'' +
-      ", data=" + data +
-      '}';
-  }
 }

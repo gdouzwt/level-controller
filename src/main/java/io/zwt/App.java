@@ -33,6 +33,7 @@ public class App extends Application {
 
   public static volatile String encryptedKey;
   public static DatagramChannel channel = null;
+  public static DatagramChannel channel2 = null;
   private ResourceBundle resourceBundle;
   public static String HOME = System.getProperty("user.home");
   static final Logger log = LoggerFactory.getLogger(App.class);
@@ -122,10 +123,17 @@ public class App extends Application {
       .bind(new InetSocketAddress(UNICAST_PORT))
       .setOption(StandardSocketOptions.IP_MULTICAST_IF, ni);
 
+    channel2 = DatagramChannel.open(StandardProtocolFamily.INET)
+      .setOption(StandardSocketOptions.SO_REUSEADDR, true)
+      .bind(new InetSocketAddress(MULTICAST_PORT))
+      .setOption(StandardSocketOptions.IP_MULTICAST_IF, ni);
+
     channel.join(multicastAddress, ni);
     channel.configureBlocking(false);
+    channel2.configureBlocking(false);
     Selector selector = Selector.open();
     channel.register(selector, SelectionKey.OP_READ, new DataRecord());
+    channel2.register(selector, SelectionKey.OP_READ, new DataRecord());
     return selector;
   }
 

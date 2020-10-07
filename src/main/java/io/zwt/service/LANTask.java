@@ -6,9 +6,9 @@ import io.zwt.App;
 import io.zwt.controller.HomeController;
 import io.zwt.domain.DataRecord;
 import io.zwt.domain.model.cmd.Data;
-import io.zwt.domain.model.cmd.IAmCmd;
 import io.zwt.domain.model.cmd.HeartBeatCmd;
-import io.zwt.domain.model.data.Other;
+import io.zwt.domain.model.cmd.IAmCmd;
+import io.zwt.domain.model.data.GenericData;
 import io.zwt.domain.model.data.PlugReportData;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -19,7 +19,10 @@ import org.slf4j.LoggerFactory;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static io.zwt.App.encryptedKey;
 
@@ -36,6 +39,7 @@ public class LANTask extends Thread {
   private volatile SimpleObjectProperty<HeartBeatCmd> heartBeat;
   private final ObjectMapper objectMapper;
   static final Logger log = LoggerFactory.getLogger(LANTask.class);
+  static List<Double> doubles = new ArrayList<>();
 
   public String getToken() {
     return token.get();
@@ -97,10 +101,11 @@ public class LANTask extends Thread {
     while (true) {
       try {
 
-        if (selector.select(11000) == 0) {
+        /*if (selector.select(110000) == 0) {
           log.debug("Waiting for heartbeat sync...");
           continue;
-        }
+        }*/
+        selector.select();
         for (Iterator<SelectionKey> iterator = selector.selectedKeys().iterator(); iterator.hasNext(); ) {
           SelectionKey selectionKey = iterator.next();
           if (selectionKey.isReadable()) {
@@ -118,30 +123,45 @@ public class LANTask extends Thread {
               } else {
                 if (data.contains("iam")) {
                   IAmCmd iAmCmd = objectMapper.readValue(data, IAmCmd.class);
-
-                } else {
-                  Other other = objectMapper.readValue(data, Other.class);
-                  log.debug(other.getData());
-                  if (other.getCmd().equals("get_id_list_ack")) {  // 获取网关子设备
-                    String[] strings = objectMapper.readValue(other.getData(), String[].class);
+                } else if (data.contains("{")) {
+                  GenericData genericData = objectMapper.readValue(data, GenericData.class);
+                  log.debug(genericData.getData());
+                  if (genericData.getCmd().equals("get_id_list_ack")) {  // 获取网关子设备
+                    String[] strings = objectMapper.readValue(genericData.getData(), String[].class);
                     System.out.println("网关子设备 id: ");
                     for (String string : strings) {
                       System.out.printf("%s\t", string);
                     }
                     System.out.println();
                   }
-                  if ((other.getCmd().equals("report") || other.getCmd().equals("read_ack"))) {
-                    if (other.getModel().equals("gateway")) {
-                      Data lampDataReport = objectMapper.readValue(other.getData(), Data.class);
+                  if ((genericData.getCmd().equals("report") || genericData.getCmd().equals("read_ack"))) {
+
+
+                    if (genericData.getModel().equals("ultrasonic")) {
+                      double level = Double.parseDouble(genericData.getData());
+                      doubles.add(level);
+                      if (doubles.size() > 25) {
+                        Stream<Double> doubleStream = doubles.stream();
+                        double v = doubleStream.mapToDouble(d -> d).average().orElse(Double.NaN);
+                        if (null != HomeController.level) {
+                          HomeController.level.setValue(((110 - v) / 100));
+                        }
+                        doubles.clear();
+                      }
+                    }
+
+                    if (genericData.getModel().equals("gateway")) {
+                      Data lampDataReport = objectMapper.readValue(genericData.getData(), Data.class);
                       HomeController.lampSelected.setValue((lampDataReport.rgbProperty().getValue() & 0xff << 24) > 0);
                     }
-                    if (other.getModel().equals("plug")) {
-                      PlugReportData plugReportData = objectMapper.readValue(other.getData(), PlugReportData.class);
+                    if (genericData.getModel().equals("plug")) {
+                      PlugReportData plugReportData = objectMapper.readValue(genericData.getData(), PlugReportData.class);
                       HomeController.plugSelected.setValue(plugReportData.statusProperty().getValue());
                     }
                   }
                 }
               }
+              //System.out.println(data);
               if (encryptedKey != null) {
                 selectionKey.interestOps(SelectionKey.OP_WRITE);
               }
