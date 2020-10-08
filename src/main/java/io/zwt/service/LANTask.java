@@ -22,7 +22,6 @@ import java.nio.channels.Selector;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static io.zwt.App.encryptedKey;
 
@@ -140,14 +139,30 @@ public class LANTask extends Thread {
                     if (genericData.getModel().equals("ultrasonic")) {
                       double level = Double.parseDouble(genericData.getData());
                       doubles.add(level);
-                      if (doubles.size() > 10) {
-                        Stream<Double> doubleStream = doubles.stream();
-                        double v = doubleStream.mapToDouble(d -> d).average().orElse(Double.NaN);
+                      if (doubles.size() > 7) {
+
+                        doubles.sort(Double::compareTo);
+
+                        List<Double> subList = doubles.subList(2, 6);
+
+                        double median = subList.stream()
+                          .mapToDouble(d -> d)
+                          .skip((subList.size() - 1) / 2)
+                          .limit(2 - subList.size() % 2)
+                          .average()
+                          .orElse(Double.NaN);
+
+                        double average = subList.stream()
+                          .mapToDouble(d -> d)
+                          .summaryStatistics()
+                          .getAverage();
+
                         if (null != HomeController.level) {
-                          HomeController.level.setValue(((108 - v) / 100));
+                          HomeController.level.setValue(((108 - average) / 100));
                         }
-                        log.debug("v " + v);
-                        log.debug("doubles " + doubles);
+                        log.debug("sublist " + subList);
+                        log.debug("average " + average);
+                        log.debug("median " + median);
                         doubles.clear();
                       }
                     }

@@ -83,7 +83,7 @@ public class HomeController implements Initializable {
         if (bigDecimal.doubleValue() > 0.95) {
           plugSelected.set(false);
           togglePlug(null);
-        } else if (bigDecimal.doubleValue() < 0.40) {
+        } else if (bigDecimal.doubleValue() < 0.30) {
           plugSelected.set(true);
           togglePlug(null);
         }
