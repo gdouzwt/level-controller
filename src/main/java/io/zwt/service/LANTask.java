@@ -10,12 +10,15 @@ import io.zwt.domain.model.cmd.HeartBeatCmd;
 import io.zwt.domain.model.cmd.IAmCmd;
 import io.zwt.domain.model.data.GenericData;
 import io.zwt.domain.model.data.PlugReportData;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -142,15 +145,14 @@ public class LANTask extends Thread {
                       if (doubles.size() > 7) {
 
                         doubles.sort(Double::compareTo);
-
                         List<Double> subList = doubles.subList(2, 6);
 
-                        double median = subList.stream()
+                        /*double median = subList.stream()
                           .mapToDouble(d -> d)
                           .skip((subList.size() - 1) / 2)
                           .limit(2 - subList.size() % 2)
                           .average()
-                          .orElse(Double.NaN);
+                          .orElse(Double.NaN);*/
 
                         double average = subList.stream()
                           .mapToDouble(d -> d)
@@ -158,11 +160,16 @@ public class LANTask extends Thread {
                           .getAverage();
 
                         if (null != HomeController.level) {
-                          HomeController.level.setValue(((108 - average) / 100));
+                          BigDecimal bigDecimal = BigDecimal.valueOf(average).setScale(2, RoundingMode.HALF_UP);
+                          BigDecimal divideBy100 = bigDecimal.divide(BigDecimal.TEN, RoundingMode.HALF_UP).divide(BigDecimal.TEN, RoundingMode.HALF_UP);
+                          Platform.runLater(() -> {
+                            HomeController.waterLabel.set(108 - bigDecimal.doubleValue() + "%");
+                            HomeController.level.setValue(1.08 - divideBy100.doubleValue());
+                          });
                         }
                         log.debug("sublist " + subList);
                         log.debug("average " + average);
-                        log.debug("median " + median);
+                        //log.debug("median " + median);
                         doubles.clear();
                       }
                     }

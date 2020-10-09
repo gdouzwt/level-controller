@@ -49,7 +49,7 @@ public class HomeController implements Initializable {
   public static boolean status;
   public static String color;
   public static int lightValue = 3;
-  public StringProperty waterLabel;
+  public static StringProperty waterLabel;
 
   /**
    * Controller 的声明周期方法，在这里进行一些初始化
@@ -57,7 +57,7 @@ public class HomeController implements Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     waterLabel = new SimpleStringProperty();
-//    waterPercentage.textProperty().bindBidirectional(waterLabel);
+    waterPercentage.textProperty().bindBidirectional(waterLabel);
     color = colorPicker.getValue().toString();
     // 存在对应的key时候才做初始化
     if (resources.containsKey("lamp.status")) {
@@ -74,17 +74,17 @@ public class HomeController implements Initializable {
     water.progressProperty().bindBidirectional(level);
     level.addListener((observable, oldValue, newValue) -> {
 
-      BigDecimal bigDecimal = BigDecimal.valueOf((double) newValue).setScale(3, RoundingMode.HALF_UP);
-      Platform.runLater(() -> waterPercentage.setText(bigDecimal.multiply(BigDecimal.valueOf(100.0).setScale(-2, RoundingMode.HALF_UP)) + "%"));
+      //BigDecimal bigDecimal = BigDecimal.valueOf((double) newValue).setScale(3, RoundingMode.HALF_UP);
+      //Platform.runLater(() -> waterPercentage.setText(bigDecimal.multiply(BigDecimal.valueOf(100.0).setScale(-2, RoundingMode.HALF_UP)) + "%"));
       cmdToSend.setText("{\"cmd\":\"read\", \"sid\":\"158d000234727c\"}");
       try {
         sendWhatever(null);
         //System.out.println(bigDecimal.doubleValue() * 100 + "%");
-        if (bigDecimal.doubleValue() > 0.95) {
-          plugSelected.set(false);
+        if ((double) newValue > 0.95) {
+//          plugSelected.set(false);
           togglePlug(null);
-        } else if (bigDecimal.doubleValue() < 0.30) {
-          plugSelected.set(true);
+        } else if ((double) newValue < 0.30) {
+//          plugSelected.set(true);
           togglePlug(null);
         }
       } catch (IOException ioException) {
