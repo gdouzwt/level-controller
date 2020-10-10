@@ -145,12 +145,12 @@ public class LANTask extends Thread {
 
                         List<Double> subList = doubles.subList(2, 6);
 
-                        double median = subList.stream()
+                        /*double median = subList.stream()
                           .mapToDouble(d -> d)
                           .skip((subList.size() - 1) / 2)
                           .limit(2 - subList.size() % 2)
                           .average()
-                          .orElse(Double.NaN);
+                          .orElse(Double.NaN);*/
 
                         double average = subList.stream()
                           .mapToDouble(d -> d)
@@ -162,7 +162,7 @@ public class LANTask extends Thread {
                         }
                         log.debug("sublist " + subList);
                         log.debug("average " + average);
-                        log.debug("median " + median);
+                        //log.debug("median " + median);
                         doubles.clear();
                       }
                     }

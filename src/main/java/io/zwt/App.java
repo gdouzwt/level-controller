@@ -150,7 +150,7 @@ public class App extends Application {
     WriteCmd writeCmd = new WriteCmd();
     writeCmd.setSid(GATEWAY_SID);
     Data data = new Data();
-    data.statusProperty().setValue(null);
+    //data.statusProperty().setValue(null);
     data.setKey(encryptedKey);
     int rgb = (light << 24) | colorValue;
     data.setRgb(rgb);
@@ -196,7 +196,7 @@ public class App extends Application {
     writeCmd.setSid(PLUG_SID);
     Data data = new Data();
     data.setStatus(HomeController.plugSelected.get());
-    data.rgbProperty().setValue(null);
+    //data.rgbProperty().setValue(null);
     data.setKey(encryptedKey);
     writeCmd.setData(objectMapper.writeValueAsString(data));
     String cmd = objectMapper.writeValueAsString(writeCmd);
