@@ -8,13 +8,13 @@
             xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.zwt.controller.HomeController">
   <JFXToggleButton fx:id="plugToggleButton" layoutX="25.0" layoutY="22.0" onAction="#togglePlug" prefHeight="58.0" prefWidth="200.0" text="插座开关 "/>
   <ColorPicker fx:id="colorPicker" layoutX="583.0" layoutY="106.0" onAction="#updateColor"/>
-  <JFXToggleButton fx:id="lampSwitch" layoutX="34.0" layoutY="88.0" onAction="#updateColor" prefHeight="58.0" prefWidth="200.0" text="网关彩灯开关 "/>
+  <JFXToggleButton fx:id="lampSwitch" layoutX="34.0" layoutY="88.0" onAction="#updateColor" prefHeight="58.0" prefWidth="179.0" text="彩灯开关 "/>
 
   <JFXSlider fx:id="light" layoutX="225.0" layoutY="101.0" majorTickUnit="10.0" onMouseDragged="#updateLight" onMouseReleased="#updateLight" prefHeight="32.0" prefWidth="316.0"
              styleClass="jfx-slider" value="3.0"/>
-  <ProgressBar fx:id="water" layoutX="210.0" layoutY="274.0" prefHeight="18.0" prefWidth="352.0"/>
-  <Button layoutX="75.0" layoutY="223.0" onAction="#sendWhois" prefHeight="23.0" prefWidth="59.0" text="whois"/>
+  <ProgressBar fx:id="water" layoutX="225.0" layoutY="227.0" prefHeight="18.0" prefWidth="316.0"/>
+  <Button layoutX="75.0" layoutY="223.0" onAction="#sendWhois" prefHeight="23.0" prefWidth="99.0" text="whois"/>
   <Button layoutX="75.0" layoutY="158.0" mnemonicParsing="false" onAction="#sendWhatever" text="send whatever"/>
-  <TextField fx:id="cmdToSend" layoutX="213.0" layoutY="158.0" prefHeight="23.0" prefWidth="329.0"/>
-  <Label fx:id="waterPercentage" layoutX="603.0" layoutY="276.0" prefHeight="15.0" prefWidth="191.0"/>
+  <TextField fx:id="cmdToSend" layoutX="226.0" layoutY="158.0" prefHeight="23.0" prefWidth="316.0"/>
+  <Label fx:id="waterPercentage" layoutX="583.0" layoutY="228.0" prefHeight="15.0" prefWidth="191.0"/>
 </AnchorPane>
