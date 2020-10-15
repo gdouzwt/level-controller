@@ -9,7 +9,7 @@ import java.net.InetSocketAddress;
  */
 
 public class Config {
-  public static final String APP_TITLE = "骚气的米家智能网关控制面板";
+  public static final String APP_TITLE = "米家智能网关控制面板";
 
   public static final String SECRET = "07wjrkc41typdvae";
   public static final SecretKey SECRET_KEY = new SecretKeySpec(SECRET.getBytes(), 0, 16, "AES");

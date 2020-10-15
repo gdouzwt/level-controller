@@ -25,9 +25,11 @@ import java.util.ResourceBundle;
 public class HomeController implements Initializable {
 
   @FXML
-  public ProgressBar water;
+  public ProgressBar water; // 表示水位的进度条控件
+
   @FXML
-  public Label waterPercentage;
+  public Label waterPercentage; // 显示水位百分比的文本标签
+
   @FXML
   private TextField cmdToSend;
 
