@@ -139,11 +139,11 @@ public class LANTask extends Thread {
                     if (genericData.getModel().equals("ultrasonic")) {
                       double level = Double.parseDouble(genericData.getData());
                       doubles.add(level);
-                      if (doubles.size() > 7) {
+                      if (doubles.size() > 9) {
 
                         doubles.sort(Double::compareTo);
 
-                        List<Double> subList = doubles.subList(2, 6);
+                        List<Double> subList = doubles.subList(3, 8);
 
                         /*double median = subList.stream()
                           .mapToDouble(d -> d)
@@ -158,7 +158,7 @@ public class LANTask extends Thread {
                           .getAverage();
 
                         if (null != HomeController.level) {
-                          HomeController.level.setValue(((108 - average) / 100));
+                          HomeController.level.setValue(((125 - average) / 120));
                         }
                         log.debug("sublist " + subList);
                         log.debug("average " + average);

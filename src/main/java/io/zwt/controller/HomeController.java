@@ -82,10 +82,10 @@ public class HomeController implements Initializable {
       try {
         sendWhatever(null);
         //System.out.println(bigDecimal.doubleValue() * 100 + "%");
-        if (bigDecimal.doubleValue() > 0.95) {
+        if (bigDecimal.doubleValue() < 0 || bigDecimal.doubleValue() >= 0.9) {
           plugSelected.set(false);
           togglePlug(null);
-        } else if (bigDecimal.doubleValue() < 0.30) {
+        } else if (bigDecimal.doubleValue()>0 && bigDecimal.doubleValue() < 0.30) {
           plugSelected.set(true);
           togglePlug(null);
         }
