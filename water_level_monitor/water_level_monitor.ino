@@ -25,7 +25,7 @@ float getDistance() {
 
 void loop() {
   cm = getDistance();
-  Serial.print("level,site=water value=");
+  //Serial.print("level,site=water value=");
   Serial.println(cm);
   delay(125);
  }
