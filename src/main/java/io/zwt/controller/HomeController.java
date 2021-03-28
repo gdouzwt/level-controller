@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXToggleButton;
 import io.zwt.App;
 import io.zwt.domain.model.cmd.WhoisCmd;
-import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,8 +13,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -74,8 +71,6 @@ public class HomeController implements Initializable {
     water.progressProperty().bindBidirectional(level);
     level.addListener((observable, oldValue, newValue) -> {
 
-      //BigDecimal bigDecimal = BigDecimal.valueOf((double) newValue).setScale(3, RoundingMode.HALF_UP);
-      //Platform.runLater(() -> waterPercentage.setText(bigDecimal.multiply(BigDecimal.valueOf(100.0).setScale(-2, RoundingMode.HALF_UP)) + "%"));
       cmdToSend.setText("{\"cmd\":\"read\", \"sid\":\"158d000234727c\"}");
       try {
         sendWhatever(null);
